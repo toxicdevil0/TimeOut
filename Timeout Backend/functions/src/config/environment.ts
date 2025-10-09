@@ -12,21 +12,6 @@ interface RequiredEnvVars {
   CLERK_PUBLISHABLE_KEY: string;
 }
 
-interface OptionalEnvVars {
-  NODE_ENV?: string;
-  ROOM_EXPIRY_HOURS?: string;
-  MAX_ROOM_MEMBERS?: string;
-  SESSION_TIMEOUT_MINUTES?: string;
-  RATE_LIMIT_REQUESTS_PER_MINUTE?: string;
-  CORS_ALLOWED_ORIGINS?: string;
-  JWT_VERIFY_STRICT?: string;
-  ENABLE_DETAILED_LOGGING?: string;
-  SENTRY_DSN?: string;
-  METRICS_ENABLED?: string;
-  FIRESTORE_RETRY_CONFIG: string;
-  ENABLE_FIRESTORE_CACHE: string;
-}
-
 class BackendEnvironmentConfig {
   private readonly env: Environment;
   private readonly isDevelopment: boolean;

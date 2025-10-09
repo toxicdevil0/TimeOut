@@ -1,0 +1,286 @@
+/* TimeOut Custom Scheduler Styles */
+/* Override react-big-schedule styles to match TimeOut's glass theme */
+
+.timeout-scheduler-wrapper {
+  --scheduler-primary: hsl(212, 86%, 64%);
+  --scheduler-glass: hsl(0, 0%, 100%, 0.8);
+  --scheduler-border: hsl(214, 32%, 91%);
+  --scheduler-text: hsl(215, 16%, 47%);
+  --scheduler-bg: hsl(210, 20%, 98%);
+}
+
+/* Main scheduler container */
+.timeout-scheduler-wrapper .scheduler {
+  background: transparent !important;
+  border: none !important;
+  font-family: inherit !important;
+}
+
+/* Header styling - Enhanced visibility */
+.timeout-scheduler-wrapper .scheduler-table-header th {
+  background: linear-gradient(135deg, var(--scheduler-glass), rgba(255, 255, 255, 0.9)) !important;
+  border: 2px solid var(--scheduler-border) !important;
+  color: hsl(215, 25%, 27%) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 12px 16px !important;
+  backdrop-filter: blur(10px) !important;
+  text-align: center !important;
+  position: relative !important;
+}
+
+.timeout-scheduler-wrapper .scheduler-table-header th::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--scheduler-primary);
+  border-radius: 1px;
+}
+
+/* Resource table styling - Better distinction */
+.timeout-scheduler-wrapper .scheduler-resource-table td {
+  background: linear-gradient(135deg, var(--scheduler-glass), rgba(255, 255, 255, 0.95)) !important;
+  border: 1px solid var(--scheduler-border) !important;
+  border-right: 3px solid var(--scheduler-primary) !important;
+  color: hsl(215, 25%, 27%) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 12px 16px !important;
+  backdrop-filter: blur(10px) !important;
+  position: relative !important;
+}
+
+/* Resource type indicators */
+.timeout-scheduler-wrapper .scheduler-resource-table td:nth-child(1) {
+  border-right-color: #4A90E2 !important; /* Study Sessions */
+}
+
+.timeout-scheduler-wrapper .scheduler-resource-table td:nth-child(2) {
+  border-right-color: hsl(145, 63%, 42%) !important; /* Breaks */
+}
+
+.timeout-scheduler-wrapper .scheduler-resource-table td:nth-child(3) {
+  border-right-color: hsl(212, 86%, 74%) !important; /* Team Sessions */
+}
+
+.timeout-scheduler-wrapper .scheduler-resource-table td:nth-child(4) {
+  border-right-color: hsl(262, 83%, 58%) !important; /* Deep Focus */
+}
+
+/* Content cells - Enhanced grid visibility */
+.timeout-scheduler-wrapper .scheduler-content-table td {
+  background: var(--scheduler-bg) !important;
+  border: 1px solid var(--scheduler-border) !important;
+  position: relative !important;
+  min-height: 60px !important;
+}
+
+/* Alternating row colors for better readability */
+.timeout-scheduler-wrapper .scheduler-content-table tr:nth-child(odd) td {
+  background: rgba(248, 250, 252, 0.8) !important;
+}
+
+.timeout-scheduler-wrapper .scheduler-content-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Hour markers */
+.timeout-scheduler-wrapper .scheduler-content-table td:nth-child(n+2) {
+  border-left: 2px solid var(--scheduler-border) !important;
+}
+
+/* Current time indicator */
+.timeout-scheduler-wrapper .scheduler-content-table .current-time {
+  border-left: 3px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+/* Weekend styling */
+.timeout-scheduler-wrapper .scheduler-content-table .weekend {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Event styling - Enhanced visual distinction */
+.timeout-scheduler-wrapper .scheduler-event {
+  border-radius: 8px !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  backdrop-filter: blur(6px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.timeout-scheduler-wrapper .scheduler-event:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  z-index: 10 !important;
+}
+
+/* Event type specific styling */
+.timeout-scheduler-wrapper .scheduler-event[style*="#4A90E2"] {
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%) !important;
+  border-color: #357ABD !important;
+}
+
+.timeout-scheduler-wrapper .scheduler-event[style*="hsl(145, 63%, 42%)"] {
+  background: linear-gradient(135deg, hsl(145, 63%, 42%) 0%, hsl(145, 63%, 35%) 100%) !important;
+  border-color: hsl(145, 63%, 35%) !important;
+}
+
+.timeout-scheduler-wrapper .scheduler-event[style*="hsl(212, 86%, 74%)"] {
+  background: linear-gradient(135deg, hsl(212, 86%, 74%) 0%, hsl(212, 86%, 64%) 100%) !important;
+  border-color: hsl(212, 86%, 64%) !important;
+}
+
+/* Event text enhancement */
+.timeout-scheduler-wrapper .scheduler-event .event-item {
+  color: white !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  padding: 2px 6px !important;
+  line-height: 1.2 !important;
+}
+
+/* Navigation buttons */
+.timeout-scheduler-wrapper .scheduler-header .ant-btn {
+  background: var(--scheduler-glass) !important;
+  border: 1px solid var(--scheduler-border) !important;
+  color: var(--scheduler-text) !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.timeout-scheduler-wrapper .scheduler-header .ant-btn:hover {
+  background: var(--scheduler-primary) !important;
+  color: white !important;
+  border-color: var(--scheduler-primary) !important;
+}
+
+/* Date picker styling */
+.timeout-scheduler-wrapper .ant-picker {
+  background: var(--scheduler-glass) !important;
+  border: 1px solid var(--scheduler-border) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* View selector */
+.timeout-scheduler-wrapper .ant-select-selector {
+  background: var(--scheduler-glass) !important;
+  border: 1px solid var(--scheduler-border) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Today marker */
+.timeout-scheduler-wrapper .scheduler-content-table .today {
+  background: rgba(var(--scheduler-primary), 0.05) !important;
+}
+
+/* Time slots */
+.timeout-scheduler-wrapper .scheduler-content-table .time-slot {
+  background: var(--scheduler-bg) !important;
+  border-right: 1px solid var(--scheduler-border) !important;
+}
+
+/* Non-working time */
+.timeout-scheduler-wrapper .scheduler-content-table .non-working-time {
+  background: hsl(210, 20%, 95%) !important;
+}
+
+/* Scrollbars */
+.timeout-scheduler-wrapper ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.timeout-scheduler-wrapper ::-webkit-scrollbar-track {
+  background: var(--scheduler-bg);
+  border-radius: 4px;
+}
+
+.timeout-scheduler-wrapper ::-webkit-scrollbar-thumb {
+  background: var(--scheduler-border);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.timeout-scheduler-wrapper ::-webkit-scrollbar-thumb:hover {
+  background: var(--scheduler-primary);
+}
+
+/* Responsive adjustments - Enhanced for better viewport fit */
+.timeout-scheduler-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+
+/* Main scheduler container */
+.timeout-scheduler-wrapper .scheduler {
+  width: 100% !important;
+  min-width: 800px !important; /* Minimum width for usability */
+}
+
+@media (max-width: 1200px) {
+  .timeout-scheduler-wrapper .scheduler-resource-table {
+    min-width: 120px !important;
+  }
+  
+  .timeout-scheduler-wrapper .scheduler-content-table td {
+    min-width: 40px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeout-scheduler-wrapper .scheduler-resource-table {
+    min-width: 100px !important;
+  }
+  
+  .timeout-scheduler-wrapper .scheduler-event {
+    font-size: 11px !important;
+    padding: 2px 4px !important;
+  }
+  
+  .timeout-scheduler-wrapper .scheduler-content-table td {
+    min-width: 35px !important;
+  }
+}
+
+/* Loading and empty states */
+.timeout-scheduler-wrapper .loading-placeholder {
+  background: var(--scheduler-glass);
+  border: 1px solid var(--scheduler-border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: var(--scheduler-text);
+  backdrop-filter: blur(8px);
+}
+
+/* Drag and drop styling */
+.timeout-scheduler-wrapper .scheduler-event.dragging {
+  opacity: 0.7 !important;
+  transform: rotate(5deg) !important;
+}
+
+.timeout-scheduler-wrapper .drop-zone {
+  background: rgba(var(--scheduler-primary), 0.1) !important;
+  border: 2px dashed var(--scheduler-primary) !important;
+  border-radius: 8px !important;
+}
+
+/* Conflict indicators */
+.timeout-scheduler-wrapper .scheduler-event.conflict {
+  border: 2px solid #ef4444 !important;
+  animation: pulse 2s infinite !important;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}

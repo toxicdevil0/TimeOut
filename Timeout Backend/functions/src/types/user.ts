@@ -25,6 +25,62 @@ export interface UserData {
   deletedAt?: Date;
   studyStats: UserStudyStats;
   preferences: UserPreferences;
+  scheduleData?: UserScheduleData;
+}
+
+export interface UserScheduleData {
+  events: ScheduleEvent[];
+  templates: ScheduleTemplate[];
+  preferences: SchedulePreferences;
+  lastSyncAt: Date;
+}
+
+export interface ScheduleEvent {
+  id: string;
+  title: string;
+  startTime: Date;
+  endTime: Date;
+  resourceId: string;
+  bgColor?: string;
+  color?: string;
+  type: 'study' | 'break' | 'meeting' | 'focus';
+  description?: string;
+  location?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ScheduleTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  events: TemplateEvent[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TemplateEvent {
+  title: string;
+  startTime: string; // HH:MM format
+  endTime: string; // HH:MM format
+  resourceId: string;
+  type: 'study' | 'break' | 'meeting' | 'focus';
+  description?: string;
+  location?: string;
+  bgColor?: string;
+}
+
+export interface SchedulePreferences {
+  defaultView: 'week' | 'day' | 'month';
+  workingHours: {
+    start: string; // HH:MM
+    end: string; // HH:MM
+  };
+  autoSyncEnabled: boolean;
+  conflictWarningsEnabled: boolean;
+  dailyLimitEnabled: boolean;
+  maxEventsPerDay: number;
 }
 
 export interface UserStudyStats {

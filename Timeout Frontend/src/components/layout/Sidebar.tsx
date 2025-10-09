@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { LogoutButton } from "../auth/LogoutButton";
 
 interface SidebarProps {
   activeTab: string;
@@ -190,7 +191,7 @@ export const Sidebar = ({ activeTab, onTabChange, className }: SidebarProps) => 
       </div>
 
       {/* Bottom Section */}
-      <div className="p-3 border-t border-border">
+      <div className="p-3 border-t border-border space-y-1">
         {bottomItems.map((item) => (
           <NavItemComponent 
             key={item.id} 
@@ -198,6 +199,11 @@ export const Sidebar = ({ activeTab, onTabChange, className }: SidebarProps) => 
             isActive={activeTab === item.id} 
           />
         ))}
+        
+        {/* Logout Button */}
+        {!isCollapsed && (
+          <LogoutButton variant="sidebar" />
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
+import { LogoutButton } from "../auth/LogoutButton";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -63,6 +64,9 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
                 Ready to focus
               </div>
             )}
+            <div className="flex items-center">
+              <LogoutButton variant="header" />
+            </div>
           </div>
         </header>
 

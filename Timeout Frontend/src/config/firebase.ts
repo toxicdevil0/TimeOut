@@ -39,6 +39,12 @@ export const getUserProfile = httpsCallable(functions, 'getUserProfile');
 export const updateUserPreferences = httpsCallable(functions, 'updateUserPreferences');
 export const updateStudyStats = httpsCallable(functions, 'updateStudyStats');
 
+// Schedule management functions
+export const saveUserSchedule = httpsCallable(functions, 'saveUserSchedule');
+export const getUserSchedule = httpsCallable(functions, 'getUserSchedule');
+export const updateUserEvent = httpsCallable(functions, 'updateUserEvent');
+export const updateUserTemplate = httpsCallable(functions, 'updateUserTemplate');
+
 // Digital Detox functions
 export const createAppRestriction = httpsCallable(functions, 'createAppRestriction');
 export const startFocusSession = httpsCallable(functions, 'startFocusSession');

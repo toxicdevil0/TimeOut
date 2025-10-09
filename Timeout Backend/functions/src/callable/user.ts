@@ -187,3 +187,273 @@ export const updateStudyStats = onCall(
     }
   }
 );
+
+/**
+ * Save user schedule data (events and templates)
+ */
+export const saveUserSchedule = onCall(
+  {
+    timeoutSeconds: 60,
+    memory: '512MiB',
+  },
+  async (request: CallableRequest) => {
+    try {
+      // Get authenticated user ID
+      const userId = getAuthenticatedUserId(request);
+
+      const { events, templates, preferences } = request.data;
+
+      if (!events && !templates && !preferences) {
+        throw new HttpsError('invalid-argument', 'At least one of events, templates, or preferences is required');
+      }
+
+      // Validate and sanitize the data
+      const scheduleData: any = {
+        lastSyncAt: new Date(),
+      };
+
+      if (events) {
+        scheduleData.events = events.map((event: any) => ({
+          ...event,
+          startTime: new Date(event.startTime),
+          endTime: new Date(event.endTime),
+          createdAt: event.createdAt ? new Date(event.createdAt) : new Date(),
+          updatedAt: new Date(),
+        }));
+      }
+
+      if (templates) {
+        scheduleData.templates = templates.map((template: any) => ({
+          ...template,
+          createdAt: template.createdAt ? new Date(template.createdAt) : new Date(),
+          updatedAt: new Date(),
+        }));
+      }
+
+      if (preferences) {
+        scheduleData.preferences = {
+          defaultView: preferences.defaultView || 'week',
+          workingHours: preferences.workingHours || { start: '08:00', end: '22:00' },
+          autoSyncEnabled: Boolean(preferences.autoSyncEnabled !== false),
+          conflictWarningsEnabled: Boolean(preferences.conflictWarningsEnabled !== false),
+          dailyLimitEnabled: Boolean(preferences.dailyLimitEnabled !== false),
+          maxEventsPerDay: preferences.maxEventsPerDay || 4,
+        };
+      }
+
+      // Update user schedule data in Firestore
+      await db.collection('users').doc(userId).update({
+        scheduleData,
+        updatedAt: new Date(),
+      });
+
+      return { success: true, message: 'Schedule data saved successfully' };
+    } catch (error) {
+      console.error('Error saving user schedule:', error);
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+      throw new HttpsError('internal', 'Failed to save schedule data');
+    }
+  }
+);
+
+/**
+ * Get user schedule data (events and templates)
+ */
+export const getUserSchedule = onCall(
+  {
+    timeoutSeconds: 30,
+    memory: '256MiB',
+  },
+  async (request: CallableRequest) => {
+    try {
+      // Get authenticated user ID
+      const userId = getAuthenticatedUserId(request);
+
+      // Get user data from Firestore
+      const userDoc = await db.collection('users').doc(userId).get();
+      
+      if (!userDoc.exists) {
+        throw new HttpsError('not-found', 'User not found');
+      }
+
+      const userData = userDoc.data() as UserData;
+      
+      // Return schedule data or empty defaults
+      const scheduleData = userData.scheduleData || {
+        events: [],
+        templates: [],
+        preferences: {
+          defaultView: 'week',
+          workingHours: { start: '08:00', end: '22:00' },
+          autoSyncEnabled: true,
+          conflictWarningsEnabled: true,
+          dailyLimitEnabled: true,
+          maxEventsPerDay: 4,
+        },
+        lastSyncAt: new Date(),
+      };
+
+      return { success: true, scheduleData };
+    } catch (error) {
+      console.error('Error getting user schedule:', error);
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+      throw new HttpsError('internal', 'Failed to get schedule data');
+    }
+  }
+);
+
+/**
+ * Add or update a single event
+ */
+export const updateUserEvent = onCall(
+  {
+    timeoutSeconds: 30,
+    memory: '256MiB',
+  },
+  async (request: CallableRequest) => {
+    try {
+      // Get authenticated user ID
+      const userId = getAuthenticatedUserId(request);
+
+      const { event, action } = request.data;
+
+      if (!event || !action || !['add', 'update', 'delete'].includes(action)) {
+        throw new HttpsError('invalid-argument', 'Valid event and action (add/update/delete) required');
+      }
+
+      // Get current user data
+      const userDoc = await db.collection('users').doc(userId).get();
+      
+      if (!userDoc.exists) {
+        throw new HttpsError('not-found', 'User not found');
+      }
+
+      const userData = userDoc.data() as UserData;
+      const currentEvents = userData.scheduleData?.events || [];
+
+      let updatedEvents = [...currentEvents];
+
+      if (action === 'add') {
+        const newEvent = {
+          ...event,
+          startTime: new Date(event.startTime),
+          endTime: new Date(event.endTime),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        updatedEvents.push(newEvent);
+      } else if (action === 'update') {
+        const eventIndex = updatedEvents.findIndex(e => e.id === event.id);
+        if (eventIndex >= 0) {
+          updatedEvents[eventIndex] = {
+            ...updatedEvents[eventIndex],
+            ...event,
+            startTime: new Date(event.startTime),
+            endTime: new Date(event.endTime),
+            updatedAt: new Date(),
+          };
+        }
+      } else if (action === 'delete') {
+        updatedEvents = updatedEvents.filter(e => e.id !== event.id);
+      }
+
+      // Update the schedule data
+      const scheduleData = {
+        ...userData.scheduleData,
+        events: updatedEvents,
+        lastSyncAt: new Date(),
+      };
+
+      await db.collection('users').doc(userId).update({
+        scheduleData,
+        updatedAt: new Date(),
+      });
+
+      return { success: true, message: `Event ${action}ed successfully` };
+    } catch (error) {
+      console.error('Error updating user event:', error);
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+      throw new HttpsError('internal', 'Failed to update event');
+    }
+  }
+);
+
+/**
+ * Add or update a single template
+ */
+export const updateUserTemplate = onCall(
+  {
+    timeoutSeconds: 30,
+    memory: '256MiB',
+  },
+  async (request: CallableRequest) => {
+    try {
+      // Get authenticated user ID
+      const userId = getAuthenticatedUserId(request);
+
+      const { template, action } = request.data;
+
+      if (!template || !action || !['add', 'update', 'delete'].includes(action)) {
+        throw new HttpsError('invalid-argument', 'Valid template and action (add/update/delete) required');
+      }
+
+      // Get current user data
+      const userDoc = await db.collection('users').doc(userId).get();
+      
+      if (!userDoc.exists) {
+        throw new HttpsError('not-found', 'User not found');
+      }
+
+      const userData = userDoc.data() as UserData;
+      const currentTemplates = userData.scheduleData?.templates || [];
+
+      let updatedTemplates = [...currentTemplates];
+
+      if (action === 'add') {
+        const newTemplate = {
+          ...template,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        updatedTemplates.push(newTemplate);
+      } else if (action === 'update') {
+        const templateIndex = updatedTemplates.findIndex(t => t.id === template.id);
+        if (templateIndex >= 0) {
+          updatedTemplates[templateIndex] = {
+            ...updatedTemplates[templateIndex],
+            ...template,
+            updatedAt: new Date(),
+          };
+        }
+      } else if (action === 'delete') {
+        updatedTemplates = updatedTemplates.filter(t => t.id !== template.id);
+      }
+
+      // Update the schedule data
+      const scheduleData = {
+        ...userData.scheduleData,
+        templates: updatedTemplates,
+        lastSyncAt: new Date(),
+      };
+
+      await db.collection('users').doc(userId).update({
+        scheduleData,
+        updatedAt: new Date(),
+      });
+
+      return { success: true, message: `Template ${action}ed successfully` };
+    } catch (error) {
+      console.error('Error updating user template:', error);
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+      throw new HttpsError('internal', 'Failed to update template');
+    }
+  }
+);
