@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { DashboardHeader } from "./DashboardHeader";
-import { DashboardTabs } from "./DashboardTabs";
+import { MainLayout } from "../layout/MainLayout";
+import { DashboardOverview } from "../layout/DashboardOverview";
+import { TimerView } from "../layout/TimerView";
+import { TodayView } from "../layout/TodayView";
+import { SettingsView } from "../layout/SettingsView";
 import { ScheduleMaker } from "./tabs/ScheduleMaker";
 import { StudyTab } from "./tabs/StudyTab";
 import { EnhancedGroupsTab } from "./tabs/EnhancedGroupsTab";
@@ -8,10 +11,16 @@ import { ClassesTab } from "./tabs/ClassesTab";
 import { DigitalDetoxTab } from "./tabs/DigitalDetoxTab";
 
 export const StudentDashboard = () => {
-  const [activeTab, setActiveTab] = useState("schedule");
+  const [currentView, setCurrentView] = useState("dashboard");
 
-  const renderTabContent = () => {
-    switch (activeTab) {
+  const renderViewContent = () => {
+    switch (currentView) {
+      case "dashboard":
+        return <DashboardOverview />;
+      case "timer":
+        return <TimerView />;
+      case "today":
+        return <TodayView />;
       case "schedule":
         return <ScheduleMaker />;
       case "study":
@@ -22,18 +31,16 @@ export const StudentDashboard = () => {
         return <ClassesTab />;
       case "detox":
         return <DigitalDetoxTab />;
+      case "settings":
+        return <SettingsView />;
       default:
-        return <ScheduleMaker />;
+        return <DashboardOverview />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardHeader />
-      <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
-      <div className="flex-1">
-        {renderTabContent()}
-      </div>
-    </div>
+    <MainLayout currentView={currentView} onViewChange={setCurrentView}>
+      {renderViewContent()}
+    </MainLayout>
   );
 };

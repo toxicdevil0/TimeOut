@@ -6,68 +6,70 @@
 
 @layer base {
   :root {
-    /* Background System */
-    --background: 240 100% 97%;
-    --background-secondary: 240 50% 95%;
-    --foreground: 158 82% 15%;
+    /* TickTick-Inspired Color System */
+    
+    /* Background System - Clean whites and light grays */
+    --background: 0 0% 98%;                    /* #FAFAFA */
+    --background-secondary: 210 20% 96%;      /* #F8F9FA */
+    --foreground: 215 28% 17%;                /* #2C3E50 */
 
-    /* Card System */
-    --card: 240 50% 95%;
-    --card-foreground: 158 82% 15%;
-    --card-border: 158 20% 80%;
+    /* Card System - Clean, minimal */
+    --card: 0 0% 100%;                        /* Pure white cards */
+    --card-foreground: 215 28% 17%;           /* #2C3E50 */
+    --card-border: 214 32% 91%;               /* #E8EAED */
 
-    /* Glass Effect */
-    --glass: 240 100% 98%;
-    --glass-border: 158 20% 85%;
+    /* Glass Effect - Subtle */
+    --glass: 0 0% 100%;
+    --glass-border: 214 32% 91%;
 
-    /* Brand Colors - Green Focus Theme */
-    --primary: 158 82% 30%;
-    --primary-foreground: 240 100% 99%;
-    --primary-glow: 158 82% 40%;
+    /* Brand Colors - TickTick-style blue accent */
+    --primary: 212 86% 64%;                   /* #4A90E2 - TickTick blue */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 212 86% 74%;
 
-    --secondary: 158 20% 85%;
-    --secondary-foreground: 158 82% 20%;
+    --secondary: 214 32% 91%;                 /* Light gray */
+    --secondary-foreground: 215 28% 17%;
 
     /* Interactive Elements */
-    --muted: 158 20% 90%;
-    --muted-foreground: 158 30% 40%;
+    --muted: 210 20% 95%;                     /* Very light gray */
+    --muted-foreground: 215 16% 47%;          /* #7F8C8D */
 
-    --accent: 158 82% 30%;
-    --accent-foreground: 240 100% 99%;
+    --accent: 212 86% 64%;                    /* Same as primary */
+    --accent-foreground: 0 0% 100%;
 
-    /* Status Colors */
-    --success: 142 76% 36%;
-    --success-foreground: 240 100% 99%;
+    /* Status Colors - Refined */
+    --success: 145 63% 42%;                   /* #27AE60 - Muted green for focus states */
+    --success-foreground: 0 0% 100%;
     
-    --warning: 38 92% 45%;
-    --warning-foreground: 240 100% 99%;
+    --warning: 35 91% 65%;                    /* Softer orange */
+    --warning-foreground: 215 28% 17%;
     
-    --destructive: 0 84% 50%;
-    --destructive-foreground: 240 100% 99%;
+    --destructive: 354 70% 54%;               /* Softer red */
+    --destructive-foreground: 0 0% 100%;
 
     /* Live/Active States */
-    --live: 0 84% 60%;
-    --live-glow: 0 84% 70%;
+    --live: 145 63% 42%;                      /* Green for active focus */
+    --live-glow: 145 63% 52%;
 
-    /* Borders & Inputs */
-    --border: 158 20% 80%;
-    --input: 158 20% 90%;
-    --ring: 158 82% 30%;
+    /* Borders & Inputs - TickTick-style */
+    --border: 214 32% 91%;                    /* #E8EAED */
+    --input: 210 20% 96%;                     /* #F8F9FA */
+    --ring: 212 86% 64%;                      /* Primary blue */
 
-    /* Design Tokens */
-    --radius: 1rem;
-    --radius-sm: 0.75rem;
-    --radius-lg: 1.5rem;
+    /* Design Tokens - TickTick-inspired */
+    --radius: 0.5rem;                         /* 8px - cleaner, less rounded */
+    --radius-sm: 0.375rem;                    /* 6px */
+    --radius-lg: 0.75rem;                     /* 12px */
 
-    /* Gradients */
+    /* Gradients - Subtle, professional */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-glass: linear-gradient(135deg, hsl(var(--glass) / 0.8), hsl(var(--glass) / 0.4));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(158 100% 45%));
+    --gradient-glass: linear-gradient(135deg, hsl(var(--glass) / 0.95), hsl(var(--glass) / 0.8));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(212 86% 74%));
 
-    /* Shadows */
-    --shadow-glass: 0 8px 32px hsl(var(--primary) / 0.12);
-    --shadow-glow: 0 0 40px hsl(var(--primary-glow) / 0.3);
-    --shadow-card: 0 4px 24px hsl(220 27% 2% / 0.4);
+    /* Shadows - TickTick-style subtle shadows */
+    --shadow-glass: 0 2px 8px hsl(215 28% 17% / 0.08);
+    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.15);
+    --shadow-card: 0 1px 3px hsl(215 28% 17% / 0.12), 0 1px 2px hsl(215 28% 17% / 0.24);
 
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
