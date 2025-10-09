@@ -13,6 +13,8 @@ import "./config/firebase"; // Initialize Firebase Admin
 // import * as clerkWebhooks from "./webhooks/clerk"; // Temporarily disabled - missing file
 import * as userCallables from "./callable/user";
 import * as roomCallables from "./callable/room";
+import * as digitalDetoxCallables from "./callable/digitalDetox";
+import * as communityCallables from "./callable/community";
 
 // Health check endpoint
 export const healthCheck = functions.https.onRequest((req, res) => {
@@ -42,7 +44,14 @@ export const api = functions.https.onRequest((req, res) => {
         "leaveRoom",
         "getPublicRooms",
         "getRoomDetails",
-        "updateParticipantStatus"
+        "updateParticipantStatus",
+        "createAppRestriction",
+        "startFocusSession",
+        "endFocusSession",
+        "getUserRestrictions", 
+        "getFocusAnalytics",
+        "updateDigitalWellbeing",
+        "recordBlockedUsage"
       ],
     },
   });
@@ -64,3 +73,20 @@ export const leaveRoom = roomCallables.leaveRoom;
 export const getPublicRooms = roomCallables.getPublicRooms;
 export const getRoomDetails = roomCallables.getRoomDetails;
 export const updateParticipantStatus = roomCallables.updateParticipantStatus;
+
+// Export digital detox callable functions
+export const createAppRestriction = digitalDetoxCallables.createAppRestriction;
+export const startFocusSession = digitalDetoxCallables.startFocusSession;
+export const endFocusSession = digitalDetoxCallables.endFocusSession;
+export const getUserRestrictions = digitalDetoxCallables.getUserRestrictions;
+export const getFocusAnalytics = digitalDetoxCallables.getFocusAnalytics;
+export const updateDigitalWellbeing = digitalDetoxCallables.updateDigitalWellbeing;
+export const recordBlockedUsage = digitalDetoxCallables.recordBlockedUsage;
+
+// Export community callable functions
+export const createStudyCheckIn = communityCallables.createStudyCheckIn;
+export const submitPhotoVerification = communityCallables.submitPhotoVerification;
+export const votePhotoVerification = communityCallables.votePhotoVerification;
+export const getLeaderboard = communityCallables.getLeaderboard;
+export const getUserAchievements = communityCallables.getUserAchievements;
+export const createStudyGroup = communityCallables.createStudyGroup;

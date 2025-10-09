@@ -1,0 +1,71 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    name: Update Dependencies
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Update Frontend Dependencies
+        working-directory: 'Timeout Frontend'
+        run: |
+          npm update
+          npm audit fix --audit-level=moderate || true
+          
+      - name: Update Backend Dependencies
+        working-directory: 'Timeout Backend/functions'
+        run: |
+          npm update
+          npm audit fix --audit-level=moderate || true
+          
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Create Pull Request
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update dependencies'
+          title: 'chore: Automated dependency updates'
+          body: |
+            This PR contains automated dependency updates.
+            
+            ## Changes
+            - Updated npm dependencies to latest compatible versions
+            - Ran `npm audit fix` to address security vulnerabilities
+            
+            ## Testing
+            - [ ] Verify all tests pass
+            - [ ] Test critical functionality manually
+            - [ ] Check for breaking changes in updated packages
+            
+            Created by automated workflow on ${{ github.ref_name }}.
+          branch: 'automated/dependency-updates'
+          delete-branch: true

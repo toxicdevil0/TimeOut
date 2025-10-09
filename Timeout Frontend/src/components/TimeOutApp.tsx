@@ -6,48 +6,18 @@ import { StudentDashboard } from "./dashboard/StudentDashboard";
 import { handleAuthSuccess, getUserData } from "@/utils/firebaseUserHandler";
 import { updateUserRole } from "@/config/firebase";
 
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  imageUrl?: string;
-}
-
 export const TimeOutApp = () => {
   const [userRole, setUserRole] = useState<"student" | "teacher" | null>(null);
-  const [mockUser, setMockUser] = useState<User | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
   const [userInitialized, setUserInitialized] = useState(false);
 
-  // Safely try to use Clerk hooks
-  let isLoaded = false;
-  let isSignedIn = false;
-  let user = null;
-  let isClerkAvailable = true;
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
 
-  try {
-    const auth = useAuth();
-    const userData = useUser();
-    
-    isLoaded = auth.isLoaded && userData.isLoaded;
-    isSignedIn = auth.isSignedIn;
-    user = userData.user;
-  } catch (error) {
-    // Clerk not available, use demo mode
-    isClerkAvailable = false;
-    console.warn("Clerk not available, using demo mode:", error);
-  }
-
-  // Handle Clerk user authentication
+  // Handle user authentication
   useEffect(() => {
     const initializeUser = async () => {
-      // Only initialize if: 
-      // 1. Clerk is available and user is signed in
-      // 2. User exists and has an ID
-      // 3. Not already initializing
-      // 4. User hasn't been initialized yet
-      if (isClerkAvailable && isSignedIn && user?.id && !isInitializing && !userInitialized) {
+      if (isSignedIn && user?.id && !isInitializing && !userInitialized) {
         setIsInitializing(true);
         try {
           console.log('🔄 Initializing user in database...', user.id);
@@ -59,7 +29,7 @@ export const TimeOutApp = () => {
             setUserRole(userData.role);
           }
           
-          setUserInitialized(true); // Mark as initialized
+          setUserInitialized(true);
         } catch (error) {
           console.error('Failed to initialize user:', error);
         } finally {
@@ -76,23 +46,11 @@ export const TimeOutApp = () => {
     }
 
     initializeUser();
-  }, [isClerkAvailable, isSignedIn, user?.id, userInitialized]); // FIXED: Only depend on user ID, not the whole user object
-
-  // Mock authentication handlers for fallback
-  const handleMockAuthSuccess = () => {
-    const mockUserData: User = {
-      id: "demo-user-123",
-      email: "demo@timeout.app",
-      firstName: "Demo",
-      lastName: "User",
-      imageUrl: undefined
-    };
-    setMockUser(mockUserData);
-  };
+  }, [isSignedIn, user?.id, userInitialized]);
 
   const handleRoleSelection = async (role: "student" | "teacher") => {
     try {
-      if (isClerkAvailable && user) {
+      if (user) {
         const result = await updateUserRole({ 
           role,
           userId: user.id 
@@ -102,13 +60,12 @@ export const TimeOutApp = () => {
       setUserRole(role);
     } catch (error) {
       console.error('Failed to update role:', error);
-      // Still set role locally for demo
       setUserRole(role);
     }
   };
 
   // Loading state
-  if (isClerkAvailable && (!isLoaded || isInitializing)) {
+  if (!isLoaded || isInitializing) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -121,34 +78,23 @@ export const TimeOutApp = () => {
     );
   }
 
-  // Determine current user (Clerk or mock)
-  const currentUser = isClerkAvailable && user ? {
-    id: user.id,
-    email: user.primaryEmailAddress?.emailAddress || "",
-    firstName: user.firstName || "",
-    lastName: user.lastName || "",
-    imageUrl: user.imageUrl
-  } : mockUser;
-
-  const isAuthenticated = isClerkAvailable ? isSignedIn : mockUser !== null;
-
   // Show auth page if not authenticated
-  if (!isAuthenticated) {
-    return <AuthPage onAuthSuccess={handleMockAuthSuccess} />;
+  if (!isSignedIn) {
+    return <AuthPage />;
   }
 
   // Show role selection if user hasn't selected a role
-  if (!userRole && currentUser) {
+  if (!userRole && user) {
     return (
       <RoleSelection
-        userName={`${currentUser.firstName} ${currentUser.lastName}`.trim() || currentUser.email}
+        userName={`${user.firstName} ${user.lastName}`.trim() || user.primaryEmailAddress?.emailAddress || "User"}
         onRoleSelect={handleRoleSelection}
       />
     );
   }
 
   // Show appropriate dashboard based on role
-  if (userRole === "student" && currentUser) {
+  if (userRole === "student") {
     return <StudentDashboard />;
   }
 

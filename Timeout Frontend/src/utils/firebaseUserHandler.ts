@@ -1,36 +1,20 @@
-// Firebase user handler for frontend
-import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDoc, setDoc, connectFirestoreEmulator } from 'firebase/firestore';
+﻿import { getFirestore, doc, getDoc, setDoc, updateDoc, connectFirestoreEmulator } from 'firebase/firestore';
+import { getApp } from 'firebase/app';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAod0vj_GsXVVgKeScuPJBPwB3T4RjE0E0",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "timeout-backend-340e2.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "timeout-backend-340e2",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "timeout-backend-340e2.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "176409782600",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:176409782600:web:fd0068f3745ee0da302b7d",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-B033H3NW2W"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Get the existing Firebase app (already initialized in config/firebase.ts)
+const app = getApp();
+export const db = getFirestore(app);
 
 // Connect to Firestore emulator in development
 if (import.meta.env.DEV) {
   try {
     connectFirestoreEmulator(db, 'localhost', 8090);
-    console.log('🔥 Connected to Firestore emulator on port 8090');
+    console.log('🔥 Connected to Firestore emulator');
   } catch (error) {
-    // This is expected if already connected
-    if (error.code === 'failed-precondition') {
-      console.log('🔥 Already connected to Firestore emulator');
-    } else {
-      console.warn('⚠️ Could not connect to Firestore emulator:', error);
-    }
+    console.log('🔥 Firestore emulator connection already established');
   }
 }
 
-// Function to ensure user exists and create if not
 export const ensureUserExists = async (clerkUser: any) => {
   try {
     console.log('🔍 Checking if user exists in database...', clerkUser.id);
@@ -41,15 +25,14 @@ export const ensureUserExists = async (clerkUser: any) => {
     if (!userDoc.exists()) {
       console.log('👤 Creating new user in database...');
       
-      // Create user data matching the backend structure we verified works
       const userData = {
         clerkId: clerkUser.id,
         email: clerkUser.emailAddresses[0]?.emailAddress || '',
         firstName: clerkUser.firstName || '',
         lastName: clerkUser.lastName || '',
-        displayName: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Anonymous',
+        displayName: clerkUser.firstName + ' ' + clerkUser.lastName || 'Anonymous',
         avatarUrl: clerkUser.imageUrl || '',
-        role: null, // Will be set during role selection
+        role: null,
         createdAt: new Date(),
         updatedAt: new Date(),
         isActive: true,
@@ -77,7 +60,13 @@ export const ensureUserExists = async (clerkUser: any) => {
       return userData;
     } else {
       console.log('✅ User already exists in database');
-      return userDoc.data();
+      const existingData = userDoc.data();
+      
+      await updateDoc(userDocRef, {
+        updatedAt: new Date()
+      });
+      
+      return existingData;
     }
   } catch (error) {
     console.error('❌ Error ensuring user exists:', error);
@@ -85,7 +74,6 @@ export const ensureUserExists = async (clerkUser: any) => {
   }
 };
 
-// Function to get user data
 export const getUserData = async (clerkUserId: string) => {
   try {
     const userDocRef = doc(db, 'users', clerkUserId);
@@ -97,7 +85,6 @@ export const getUserData = async (clerkUserId: string) => {
   }
 };
 
-// Main auth success handler
 export const handleAuthSuccess = async (clerkUser: any) => {
   try {
     const userData = await ensureUserExists(clerkUser);

@@ -66,6 +66,8 @@ export function GroupSession({ groupName, groupId, onLeaveGroup }: GroupSessionP
   const [isCapturingPhoto, setIsCapturingPhoto] = useState(false);
   const [lastCapturedPhoto, setLastCapturedPhoto] = useState<string | null>(null);
   const [checkInCount, setCheckInCount] = useState(0);
+  const [automaticMonitoringEnabled, setAutomaticMonitoringEnabled] = useState(false);
+  const [nextCheckInCountdown, setNextCheckInCountdown] = useState(0);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -275,21 +277,23 @@ export function GroupSession({ groupName, groupId, onLeaveGroup }: GroupSessionP
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Schedule check-in with proper cleanup
+  // Schedule check-in with proper cleanup - Modified for 15-20 second intervals
   const scheduleCheckIn = useCallback(() => {
-    if (!isMountedRef.current || !cameraEnabled || !isTimerRunning) return;
+    if (!isMountedRef.current || !cameraEnabled || !isTimerRunning || !automaticMonitoringEnabled) return;
     
-    const delay = (5 * 60 + Math.random() * 2 * 60) * 1000; // 5-7 minutes (realistic interval)
+    // Changed to 15-20 seconds for continuous monitoring
+    const delay = (15 + Math.random() * 5) * 1000; // 15-20 seconds
     const nextCheckTime = new Date(Date.now() + delay);
     
     setNextCheckIn(nextCheckTime);
     
     checkInTimeoutRef.current = setTimeout(() => {
-      if (isMountedRef.current && cameraEnabled && isTimerRunning) {
-        setShowCheckInPrompt(true);
+      if (isMountedRef.current && cameraEnabled && isTimerRunning && automaticMonitoringEnabled) {
+        // Auto-capture instead of showing prompt
+        handleAutomaticPhotoCapture();
       }
     }, delay);
-  }, [cameraEnabled, isTimerRunning]);
+  }, [cameraEnabled, isTimerRunning, automaticMonitoringEnabled]);
 
   // Timer effect
   useEffect(() => {
@@ -308,6 +312,45 @@ export function GroupSession({ groupName, groupId, onLeaveGroup }: GroupSessionP
       }
     };
   }, [isTimerRunning]);
+
+  // Automatic monitoring effect
+  useEffect(() => {
+    if (automaticMonitoringEnabled && cameraEnabled && isTimerRunning) {
+      // Start automatic monitoring immediately
+      scheduleCheckIn();
+    } else {
+      // Stop automatic monitoring
+      if (checkInTimeoutRef.current) {
+        clearTimeout(checkInTimeoutRef.current);
+        checkInTimeoutRef.current = null;
+      }
+      setNextCheckIn(null);
+    }
+  }, [automaticMonitoringEnabled, cameraEnabled, isTimerRunning, scheduleCheckIn]);
+
+  // Countdown timer for next automatic capture
+  useEffect(() => {
+    let countdownInterval: NodeJS.Timeout | null = null;
+    
+    if (automaticMonitoringEnabled && nextCheckIn) {
+      countdownInterval = setInterval(() => {
+        const remaining = Math.max(0, Math.ceil((nextCheckIn.getTime() - Date.now()) / 1000));
+        setNextCheckInCountdown(remaining);
+        
+        if (remaining === 0) {
+          clearInterval(countdownInterval!);
+        }
+      }, 1000);
+    } else {
+      setNextCheckInCountdown(0);
+    }
+    
+    return () => {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+    };
+  }, [automaticMonitoringEnabled, nextCheckIn]);
 
   const handleLeaveRoom = async () => {
     try {
@@ -420,6 +463,79 @@ export function GroupSession({ groupName, groupId, onLeaveGroup }: GroupSessionP
       checkInTimeoutRef.current = null;
       setNextCheckIn(null);
       setShowCheckInPrompt(false);
+    }
+  };
+
+  // Automatic photo capture for continuous monitoring (15-20 second intervals)
+  const handleAutomaticPhotoCapture = async () => {
+    if (!videoRef.current || !streamRef.current) {
+      console.warn('Camera not available for automatic capture');
+      // Continue scheduling even if capture fails
+      scheduleCheckIn();
+      return;
+    }
+
+    const video = videoRef.current;
+    
+    // Skip if video not ready
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      console.warn('Video not ready for automatic capture');
+      scheduleCheckIn();
+      return;
+    }
+
+    try {
+      // Create canvas to capture photo silently
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      
+      if (!context) {
+        throw new Error('Canvas context not available');
+      }
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Mirror the image to match what user sees
+      context.scale(-1, 1);
+      context.drawImage(video, -canvas.width, 0);
+      
+      // Convert to data URL for storage/verification
+      const dataURL = canvas.toDataURL('image/jpeg', 0.7); // Lower quality for frequent captures
+      setLastCapturedPhoto(dataURL);
+      
+      // Convert to blob and potentially send to verification system
+      canvas.toBlob(async (blob) => {
+        if (blob && isMountedRef.current) {
+          // Here you could integrate with the verification system
+          // For now, just increment count and schedule next capture
+          setCheckInCount(prev => prev + 1);
+          
+          // Optional: Send to backend verification system
+          try {
+            // Example integration with community verification
+            // await createStudyCheckIn({
+            //   roomId: groupId,
+            //   checkInType: 'photo',
+            //   photoUrl: dataURL,
+            //   userId: user?.id || 'demo-user'
+            // });
+          } catch (error) {
+            console.warn('Failed to submit automatic check-in:', error);
+          }
+          
+          // Schedule next automatic capture
+          scheduleCheckIn();
+        }
+      }, 'image/jpeg', 0.7);
+      
+      // Clean up canvas
+      canvas.remove();
+      
+    } catch (error) {
+      console.error('❌ Error in automatic photo capture:', error);
+      // Continue scheduling even if capture fails
+      scheduleCheckIn();
     }
   };
 
@@ -608,9 +724,27 @@ export function GroupSession({ groupName, groupId, onLeaveGroup }: GroupSessionP
                     Start Camera
                   </Button>
                 ) : (
-                  <Button variant="destructive" onClick={handleStopCamera}>
-                    Stop Camera
-                  </Button>
+                  <>
+                    <Button variant="destructive" onClick={handleStopCamera}>
+                      Stop Camera
+                    </Button>
+                    <div className="flex items-center gap-2 ml-4 border-l pl-4">
+                      <label className="flex items-center gap-2 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={automaticMonitoringEnabled}
+                          onChange={(e) => setAutomaticMonitoringEnabled(e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        Auto Monitor (15-20s)
+                      </label>
+                      {automaticMonitoringEnabled && (
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                          🔄 Active
+                        </Badge>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -653,6 +787,20 @@ export function GroupSession({ groupName, groupId, onLeaveGroup }: GroupSessionP
                     {streamActive ? 'Live' : 'Loading...'}
                   </Badge>
                   
+                  {/* Automatic monitoring status */}
+                  {automaticMonitoringEnabled && (
+                    <Badge className="absolute top-2 right-2 bg-blue-500 text-white">
+                      🤖 Auto ({checkInCount})
+                    </Badge>
+                  )}
+                  
+                  {/* Next check-in countdown */}
+                  {automaticMonitoringEnabled && nextCheckIn && nextCheckInCountdown > 0 && (
+                    <div className="absolute top-12 right-2 text-xs bg-black/70 text-white px-2 py-1 rounded">
+                      Next: {nextCheckInCountdown}s
+                    </div>
+                  )}
+                  
                   {/* Debug info overlay - Enhanced */}
                   <div className="absolute bottom-2 left-2 text-xs bg-black/50 text-white p-1 rounded">
                     Stream: {streamRef.current ? 'Active' : 'None'} | 
@@ -690,6 +838,31 @@ export function GroupSession({ groupName, groupId, onLeaveGroup }: GroupSessionP
               )}
             </div>
           </Card>
+
+          {/* Automatic Monitoring Summary */}
+          {automaticMonitoringEnabled && (
+            <Card className="p-4 bg-blue-50 border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-blue-900 flex items-center gap-2">
+                    🤖 Automatic Monitoring Active
+                  </h3>
+                  <p className="text-sm text-blue-700">
+                    Capturing photos every 15-20 seconds for verification
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-blue-900">{checkInCount}</div>
+                  <div className="text-xs text-blue-700">Auto Captures</div>
+                  {nextCheckInCountdown > 0 && (
+                    <div className="text-xs text-blue-600 mt-1">
+                      Next in {nextCheckInCountdown}s
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+          )}
 
           {/* Photo Check-in Prompt - Enhanced with states */}
           {showCheckInPrompt && (

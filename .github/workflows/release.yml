@@ -1,0 +1,112 @@
+name: Release Management
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: 'Create prerelease'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          npm install -g standard-version
+          
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+      - name: Create release branch
+        run: |
+          git checkout -b release/v$(date +%Y%m%d-%H%M%S)
+          
+      - name: Bump version and create changelog
+        run: |
+          if [ "${{ github.event.inputs.prerelease }}" = "true" ]; then
+            standard-version --prerelease
+          else
+            standard-version --release-as ${{ github.event.inputs.release_type }}
+          fi
+          
+      - name: Update Frontend version
+        working-directory: 'Timeout Frontend'
+        run: |
+          NEW_VERSION=$(node -p "require('../package.json').version")
+          npm version $NEW_VERSION --no-git-tag-version
+          
+      - name: Update Backend version
+        working-directory: 'Timeout Backend'
+        run: |
+          NEW_VERSION=$(node -p "require('../package.json').version")
+          npm version $NEW_VERSION --no-git-tag-version
+          
+      - name: Update Backend Functions version
+        working-directory: 'Timeout Backend/functions'
+        run: |
+          NEW_VERSION=$(node -p "require('../../package.json').version")
+          npm version $NEW_VERSION --no-git-tag-version
+          
+      - name: Commit version updates
+        run: |
+          git add .
+          git commit -m "chore: update package versions for release" || true
+          
+      - name: Push release branch
+        run: |
+          git push origin HEAD
+          
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'release: v${{ steps.version.outputs.new_version }}'
+          body: |
+            ## Release v${{ steps.version.outputs.new_version }}
+            
+            This PR contains the version bump and changelog for the new release.
+            
+            ### Changes
+            - Updated version numbers across all packages
+            - Generated changelog with standard-version
+            
+            ### Pre-merge Checklist
+            - [ ] Review changelog for accuracy
+            - [ ] Verify all tests pass
+            - [ ] Test deployment to staging
+            - [ ] Update documentation if needed
+            
+            Once merged, this will trigger the production deployment.
+          branch: release/v${{ steps.version.outputs.new_version }}
+          delete-branch: true

@@ -1,12 +1,12 @@
 {
   "projects": {
-    "default": "timeout-backend"
+    "default": "timeout-backend-340e2"
   },
   "targets": {
-    "timeout-backend": {
+    "timeout-backend-340e2": {
       "hosting": {
-        "timeout-backend": [
-          "timeout-backend"
+        "timeout-backend-340e2": [
+          "timeout-backend-340e2"
         ]
       }
     }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, Clock, Users, BookOpen, LogOut } from "lucide-react";
+import { Calendar, Clock, Users, BookOpen, LogOut, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@clerk/clerk-react";
@@ -15,6 +15,7 @@ const tabs: Tab[] = [
   { id: "study", label: "Study", icon: Clock },
   { id: "groups", label: "Groups", icon: Users },
   { id: "classes", label: "Classes", icon: BookOpen },
+  { id: "detox", label: "Digital Detox", icon: Shield },
 ];
 
 interface DashboardTabsProps {

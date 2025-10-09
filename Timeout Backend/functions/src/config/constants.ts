@@ -1,15 +1,16 @@
 // Application constants and configuration
+import { backendEnvConfig } from './environment';
 
-// Clerk configuration
-export const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET || "";
-export const CLERK_SECRET_KEY = process.env.CLERK_SECRET_KEY || "";
-export const CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY || "";
+// Clerk configuration - use environment config
+export const CLERK_WEBHOOK_SECRET = backendEnvConfig.getClerkWebhookSecret();
+export const CLERK_SECRET_KEY = backendEnvConfig.getClerkSecretKey();
+export const CLERK_PUBLISHABLE_KEY = backendEnvConfig.getClerkPublishableKey();
 
 export const APP_CONFIG = {
-  // Room settings
-  ROOM_EXPIRY_HOURS: parseInt(process.env.ROOM_EXPIRY_HOURS || "24", 10),
-  MAX_ROOM_MEMBERS: parseInt(process.env.MAX_ROOM_MEMBERS || "50", 10),
-  SESSION_TIMEOUT_MINUTES: parseInt(process.env.SESSION_TIMEOUT_MINUTES || "30", 10),
+  // Room settings - from environment
+  ROOM_EXPIRY_HOURS: backendEnvConfig.getRoomExpiryHours(),
+  MAX_ROOM_MEMBERS: backendEnvConfig.getMaxRoomMembers(),
+  SESSION_TIMEOUT_MINUTES: backendEnvConfig.getSessionTimeoutMinutes(),
   
   // Timer settings
   MIN_TIMER_DURATION: 5, // 5 minutes
@@ -52,6 +53,26 @@ export const APP_CONFIG = {
     ROOM_FULL: "Study room is at capacity",
     INVALID_TIMER: "Invalid timer operation",
     PERMISSION_DENIED: "Permission denied",
+  } as const,
+
+  // Security settings
+  SECURITY: {
+    RATE_LIMIT_REQUESTS_PER_MINUTE: backendEnvConfig.getRateLimitRequestsPerMinute(),
+    CORS_ALLOWED_ORIGINS: backendEnvConfig.getCorsAllowedOrigins(),
+    JWT_VERIFY_STRICT: backendEnvConfig.shouldVerifyJwtStrict(),
+  } as const,
+
+  // Monitoring settings
+  MONITORING: {
+    DETAILED_LOGGING: backendEnvConfig.isDetailedLoggingEnabled(),
+    METRICS_ENABLED: backendEnvConfig.isMetricsEnabled(),
+    SENTRY_DSN: backendEnvConfig.getSentryDsn(),
+  } as const,
+
+  // Database settings
+  DATABASE: {
+    RETRY_CONFIG: backendEnvConfig.getFirestoreRetryConfig(),
+    CACHE_ENABLED: backendEnvConfig.isFirestoreCacheEnabled(),
   } as const,
 } as const;
 

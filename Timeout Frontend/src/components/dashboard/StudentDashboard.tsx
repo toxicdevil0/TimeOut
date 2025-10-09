@@ -3,8 +3,9 @@ import { DashboardHeader } from "./DashboardHeader";
 import { DashboardTabs } from "./DashboardTabs";
 import { ScheduleMaker } from "./tabs/ScheduleMaker";
 import { StudyTab } from "./tabs/StudyTab";
-import { GroupsTab } from "./tabs/GroupsTab";
+import { EnhancedGroupsTab } from "./tabs/EnhancedGroupsTab";
 import { ClassesTab } from "./tabs/ClassesTab";
+import { DigitalDetoxTab } from "./tabs/DigitalDetoxTab";
 
 export const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState("schedule");
@@ -16,9 +17,11 @@ export const StudentDashboard = () => {
       case "study":
         return <StudyTab />;
       case "groups":
-        return <GroupsTab />;
+        return <EnhancedGroupsTab />;
       case "classes":
         return <ClassesTab />;
+      case "detox":
+        return <DigitalDetoxTab />;
       default:
         return <ScheduleMaker />;
     }

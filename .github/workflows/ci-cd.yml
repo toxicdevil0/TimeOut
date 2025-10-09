@@ -1,0 +1,307 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # Job 1: Code Quality and Linting
+  code-quality:
+    runs-on: ubuntu-latest
+    name: Code Quality & Linting
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: |
+            Timeout Frontend/package-lock.json
+            Timeout Backend/functions/package-lock.json
+            
+      - name: Install Frontend Dependencies
+        working-directory: 'Timeout Frontend'
+        run: npm ci
+        
+      - name: Install Backend Dependencies
+        working-directory: 'Timeout Backend/functions'
+        run: npm ci
+        
+      - name: Lint Frontend
+        working-directory: 'Timeout Frontend'
+        run: npm run lint
+        
+      - name: Lint Backend
+        working-directory: 'Timeout Backend/functions'
+        run: npm run lint
+        
+      - name: TypeScript Check Frontend
+        working-directory: 'Timeout Frontend'
+        run: npx tsc --noEmit
+        
+      - name: TypeScript Check Backend
+        working-directory: 'Timeout Backend/functions'
+        run: npm run build
+
+  # Job 2: Security Scanning
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scanning
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+      - name: NPM Audit Frontend
+        working-directory: 'Timeout Frontend'
+        run: |
+          npm audit --audit-level=high || true
+          
+      - name: NPM Audit Backend
+        working-directory: 'Timeout Backend/functions'
+        run: |
+          npm audit --audit-level=high || true
+
+  # Job 3: Frontend Build and Test
+  frontend-build:
+    runs-on: ubuntu-latest
+    name: Frontend Build & Test
+    needs: [code-quality]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'Timeout Frontend/package-lock.json'
+          
+      - name: Install dependencies
+        working-directory: 'Timeout Frontend'
+        run: npm ci
+        
+      - name: Run tests
+        working-directory: 'Timeout Frontend'
+        run: npm test -- --coverage --watchAll=false
+        env:
+          CI: true
+          
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          directory: 'Timeout Frontend/coverage'
+          flags: frontend
+          
+      - name: Build for production
+        working-directory: 'Timeout Frontend'
+        run: npm run build
+        env:
+          VITE_APP_VERSION: ${{ github.sha }}
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: 'Timeout Frontend/dist'
+          retention-days: 30
+
+  # Job 4: Backend Build and Test
+  backend-build:
+    runs-on: ubuntu-latest
+    name: Backend Build & Test
+    needs: [code-quality]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'Timeout Backend/functions/package-lock.json'
+          
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+        
+      - name: Install dependencies
+        working-directory: 'Timeout Backend/functions'
+        run: npm ci
+        
+      - name: Run tests
+        working-directory: 'Timeout Backend/functions'
+        run: npm test -- --coverage
+        env:
+          CI: true
+          
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          directory: 'Timeout Backend/functions/coverage'
+          flags: backend
+          
+      - name: Build functions
+        working-directory: 'Timeout Backend'
+        run: npm run build
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-build
+          path: 'Timeout Backend/functions/lib'
+          retention-days: 30
+
+  # Job 5: Integration Tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    needs: [frontend-build, backend-build]
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    
+    services:
+      firebase-emulator:
+        image: google/cloud-sdk:latest
+        options: --health-cmd="curl -f http://localhost:4000 || exit 1" --health-interval=30s --health-timeout=10s --health-retries=3
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+        
+      - name: Install Java (for Firebase emulators)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+          
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        
+      - name: Start Firebase Emulators
+        working-directory: 'Timeout Backend'
+        run: |
+          firebase emulators:start --only firestore,functions &
+          sleep 30
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          
+      - name: Run integration tests
+        working-directory: 'Timeout Frontend'
+        run: npm run test:integration
+        env:
+          VITE_FIREBASE_USE_EMULATOR: true
+
+  # Job 6: Deploy to Staging
+  deploy-staging:
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    needs: [frontend-build, backend-build, security]
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        
+      - name: Deploy to Firebase Hosting (Staging)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}'
+          projectId: '${{ secrets.FIREBASE_PROJECT_ID_STAGING }}'
+          channelId: staging
+          
+      - name: Deploy Cloud Functions (Staging)
+        working-directory: 'Timeout Backend'
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only functions --project ${{ secrets.FIREBASE_PROJECT_ID_STAGING }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_STAGING }}
+
+  # Job 7: Deploy to Production
+  deploy-production:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    needs: [integration-tests, deploy-staging]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        
+      - name: Deploy to Firebase Hosting (Production)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}'
+          projectId: '${{ secrets.FIREBASE_PROJECT_ID_PRODUCTION }}'
+          
+      - name: Deploy Cloud Functions (Production)
+        working-directory: 'Timeout Backend'
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only functions --project ${{ secrets.FIREBASE_PROJECT_ID_PRODUCTION }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_PRODUCTION }}
+          
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            Automated release from commit ${{ github.sha }}
+            
+            ## Changes
+            - See commit history for detailed changes
+            
+            ## Deployment
+            - Frontend: Deployed to Firebase Hosting
+            - Backend: Deployed to Firebase Functions
+          draft: false
+          prerelease: false

@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # Frontend Development Server
+  frontend-dev:
+    build:
+      context: ./Timeout Frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Timeout Frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_DEMO_MODE=true
+      - VITE_LOG_LEVEL=debug
+      - VITE_FIREBASE_USE_EMULATOR=true
+    depends_on:
+      - firebase-emulator
+    networks:
+      - timeout-network
+
+  # Frontend Production Build
+  frontend-prod:
+    build:
+      context: ./Timeout Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - timeout-network
+    profiles:
+      - production
+
+  # Firebase Emulator Suite
+  firebase-emulator:
+    image: node:18-alpine
+    working_dir: /app
+    command: >
+      sh -c "
+        npm install -g firebase-tools &&
+        cd 'Timeout Backend' &&
+        firebase emulators:start --only firestore,functions,auth,hosting
+      "
+    ports:
+      - "4000:4000"   # Emulator UI
+      - "5001:5001"   # Functions
+      - "8090:8090"   # Firestore
+      - "9099:9099"   # Auth
+      - "5000:5000"   # Hosting
+    volumes:
+      - .:/app
+    environment:
+      - FIREBASE_PROJECT_ID=timeout-demo
+    networks:
+      - timeout-network
+
+  # Database Backup Service (for production)
+  db-backup:
+    image: google/cloud-sdk:alpine
+    command: >
+      sh -c "
+        while true; do
+          echo 'Creating database backup...'
+          gcloud firestore export gs://timeout-backups/$(date +%Y%m%d-%H%M%S)
+          echo 'Backup completed. Sleeping for 24 hours...'
+          sleep 86400
+        done
+      "
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/config/service-account.json
+    volumes:
+      - ./config/service-account.json:/config/service-account.json:ro
+    networks:
+      - timeout-network
+    profiles:
+      - production
+
+  # Monitoring with Prometheus (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    networks:
+      - timeout-network
+    profiles:
+      - monitoring
+
+  # Grafana Dashboard (optional)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - timeout-network
+    profiles:
+      - monitoring
+
+networks:
+  timeout-network:
+    driver: bridge
+
+volumes:
+  grafana-storage:

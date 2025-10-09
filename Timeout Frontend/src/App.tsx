@@ -9,10 +9,22 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Debug: Check environment variables
+console.log('🔍 Environment Variables Debug:', {
+  VITE_CLERK_PUBLISHABLE_KEY: import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
+  VITE_FIREBASE_PROJECT_ID: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  NODE_ENV: import.meta.env.NODE_ENV,
+  MODE: import.meta.env.MODE,
+  DEV: import.meta.env.DEV,
+  allEnvVars: import.meta.env
+});
+
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!CLERK_PUBLISHABLE_KEY) {
-  throw new Error("Missing Clerk Publishable Key");
+  console.error('❌ VITE_CLERK_PUBLISHABLE_KEY is missing or undefined');
+  console.log('Available env vars:', Object.keys(import.meta.env));
+  throw new Error("Missing Clerk Publishable Key - Check your .env file");
 }
 
 const App = () => {
