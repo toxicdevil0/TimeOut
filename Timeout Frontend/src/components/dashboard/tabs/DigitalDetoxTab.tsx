@@ -38,6 +38,9 @@ import {
   updateDigitalWellbeing,
   recordBlockedUsage
 } from "@/config/firebase";
+import { useTokens } from "@/contexts/TokenContext";
+import { useTokenNotifications } from "@/hooks/useTokenNotifications";
+import { TokenChangeAnimation } from "@/components/tokens/TokenDisplay";
 
 interface AppRestriction {
   id: string;
@@ -76,6 +79,8 @@ interface Analytics {
 
 export const DigitalDetoxTab = () => {
   const { user } = useUser();
+  const { awardTokens } = useTokens();
+  const { notifications, showNotification, hideNotification } = useTokenNotifications();
   const [restrictions, setRestrictions] = useState<AppRestriction[]>([]);
   const [activeSession, setActiveSession] = useState<FocusSession | null>(null);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
@@ -456,6 +461,37 @@ export const DigitalDetoxTab = () => {
         }
       }
       
+      // Award tokens for completed sessions
+      if (status === 'completed') {
+        const sessionDuration = activeSession.duration;
+        const baseTokens = sessionDuration; // 1 token per minute
+        let bonusTokens = 0;
+        let bonusReason = '';
+        
+        // Bonus based on session type and duration
+        if (activeSession.sessionType === 'deep_work') {
+          bonusTokens = Math.floor(sessionDuration * 0.6); // 60% bonus for deep work
+          bonusReason = ' + Deep Work bonus';
+        } else if (activeSession.sessionType === 'focus') {
+          bonusTokens = Math.floor(sessionDuration * 0.4); // 40% bonus for focus
+          bonusReason = ' + Focus bonus';
+        }
+        
+        const totalTokens = baseTokens + bonusTokens;
+        
+        try {
+          await awardTokens(totalTokens, `${activeSession.sessionType} session completed (${sessionDuration} min)`, 'focus', {
+            duration: sessionDuration,
+            sessionId: activeSession.id
+          });
+          
+          showNotification(totalTokens, 'earned', `${sessionDuration} min ${activeSession.sessionType}${bonusReason}`);
+        } catch (error) {
+          console.error('Failed to award tokens:', error);
+          showNotification(totalTokens, 'earned', `${sessionDuration} min ${activeSession.sessionType}${bonusReason} (offline)`);
+        }
+      }
+      
       // Show success message
       setAlertMessage({
         type: 'success',
@@ -695,6 +731,20 @@ export const DigitalDetoxTab = () => {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Token Notifications */}
+      <div className="fixed top-20 right-6 z-50 space-y-2">
+        {notifications.map(notification => (
+          <TokenChangeAnimation
+            key={notification.id}
+            amount={notification.amount}
+            type={notification.type}
+            reason={notification.reason}
+            visible={notification.visible}
+            onAnimationEnd={() => hideNotification(notification.id)}
+          />
+        ))}
+      </div>
+      
       {/* Fullscreen overlay notification */}
       {isFullscreen && activeSession && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg border">

@@ -15,6 +15,7 @@ import * as userCallables from "./callable/user";
 import * as roomCallables from "./callable/room";
 import * as digitalDetoxCallables from "./callable/digitalDetox";
 import * as communityCallables from "./callable/community";
+import * as tokenCallables from "./callable/tokens";
 
 // Health check endpoint
 export const healthCheck = functions.https.onRequest((req, res) => {
@@ -51,7 +52,11 @@ export const api = functions.https.onRequest((req, res) => {
         "getUserRestrictions", 
         "getFocusAnalytics",
         "updateDigitalWellbeing",
-        "recordBlockedUsage"
+        "recordBlockedUsage",
+        "saveUserTokens",
+        "getUserTokens",
+        "addTokenTransaction",
+        "updateTokenBalance"
       ],
     },
   });
@@ -90,3 +95,9 @@ export const votePhotoVerification = communityCallables.votePhotoVerification;
 export const getLeaderboard = communityCallables.getLeaderboard;
 export const getUserAchievements = communityCallables.getUserAchievements;
 export const createStudyGroup = communityCallables.createStudyGroup;
+
+// Export token callable functions
+export const saveUserTokens = tokenCallables.saveUserTokens;
+export const getUserTokens = tokenCallables.getUserTokens;
+export const addTokenTransaction = tokenCallables.addTokenTransaction;
+export const updateTokenBalance = tokenCallables.updateTokenBalance;

@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/clerk-react";
 
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import TokenSystemTester from "./components/test/TokenSystemTester";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/token-test" element={<TokenSystemTester />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
