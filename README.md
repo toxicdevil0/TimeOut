@@ -4,7 +4,7 @@
 **Demo:** [Live Preview](http://localhost:8080) (after setup)  
 **Setup Time:** 5 minutes for demo mode, 15 minutes for full features
 
-A modern study application with timer functionality, group sessions, and clean green aesthetics.
+A modern study application with timer functionality, group sessions, and clean aesthetics.
 
 ---
 
