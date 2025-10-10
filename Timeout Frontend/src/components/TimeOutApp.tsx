@@ -3,6 +3,7 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import { AuthPage } from "./auth/AuthPage";
 import { RoleSelection } from "./auth/RoleSelection";
 import { StudentDashboard } from "./dashboard/StudentDashboard";
+import { TeacherDashboardPage } from "./dashboard/TeacherDashboardPage";
 import { handleAuthSuccess, getUserData } from "@/utils/firebaseUserHandler";
 import { updateUserRole } from "@/config/firebase";
 import { TokenProvider } from "@/contexts/TokenContext";
@@ -104,14 +105,7 @@ export const TimeOutApp = () => {
   }
 
   if (userRole === "teacher") {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">Teacher Dashboard</h1>
-          <p className="text-muted-foreground">Coming soon...</p>
-        </div>
-      </div>
-    );
+    return <TeacherDashboardPage />;
   }
 
   // Fallback
