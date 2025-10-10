@@ -1,0 +1,104 @@
+name: Deploy TimeOut Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Frontend deployment to Vercel
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'Timeout Frontend/package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          cd "Timeout Frontend"
+          npm ci
+
+      - name: Build application
+        run: |
+          cd "Timeout Frontend"
+          npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+
+      - name: Deploy to Vercel
+        uses: vercel/action@v1
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: 'Timeout Frontend'
+          vercel-args: '--prod'
+
+  # Backend deployment to Firebase
+  deploy-backend:
+    name: Deploy Backend to Firebase
+    runs-on: ubuntu-latest
+    needs: deploy-frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'Timeout Backend/functions/package-lock.json'
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Install backend dependencies
+        run: |
+          cd "Timeout Backend/functions"
+          npm ci
+
+      - name: Build Firebase Functions
+        run: |
+          cd "Timeout Backend/functions"
+          npm run build
+
+      - name: Deploy to Firebase
+        run: |
+          cd "Timeout Backend"
+          firebase deploy --only functions,firestore:rules,storage --token ${{ secrets.FIREBASE_TOKEN }}
+        env:
+          FIREBASE_PROJECT: ${{ secrets.FIREBASE_PROJECT_ID }}
+
+  # Health check after deployment
+  health-check:
+    name: Post-deployment Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-frontend, deploy-backend]
+    steps:
+      - name: Check frontend health
+        run: |
+          sleep 30  # Wait for deployment to propagate
+          curl -f ${{ secrets.FRONTEND_URL }}/health || exit 1
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "🚀 TimeOut application deployed successfully!"
+          echo "Frontend: ${{ secrets.FRONTEND_URL }}"
+          echo "Backend: Firebase Functions deployed"

@@ -1,0 +1,35 @@
+name: Deploy Firebase Functions
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'Timeout Backend/**' ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          cd "Timeout Backend/functions"
+          npm ci
+          
+      - name: Build functions
+        run: |
+          cd "Timeout Backend/functions"
+          npm run build
+          
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          channelId: live
