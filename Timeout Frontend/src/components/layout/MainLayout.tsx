@@ -18,6 +18,9 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
       study: "Study",
       groups: "Study Groups",
       classes: "Classes",
+      liveclass: "Live Classes",
+      analytics: "Class Analytics",
+      resources: "Study Resources",
       detox: "Digital Detox",
       settings: "Settings"
     };
@@ -33,6 +36,9 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
       study: "Study tools and resources",
       groups: "Collaborate with study groups",
       classes: "Manage your classes and assignments",
+      liveclass: "Host and manage live class sessions",
+      analytics: "Track student engagement and performance",
+      resources: "Share study materials and resources",
       detox: "Digital wellness and focus",
       settings: "Customize your TimeOut experience"
     };

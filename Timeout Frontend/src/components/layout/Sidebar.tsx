@@ -11,7 +11,10 @@ import {
   ChevronRight,
   Clock,
   CheckSquare,
-  Target
+  Target,
+  Video,
+  TrendingUp,
+  FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -69,6 +72,24 @@ const navigationItems: NavItem[] = [
     label: "Classes",
     icon: GraduationCap,
     description: "Course management"
+  },
+  {
+    id: "liveclass",
+    label: "Live Classes",
+    icon: Video,
+    description: "Host live sessions"
+  },
+  {
+    id: "analytics",
+    label: "Analytics",
+    icon: TrendingUp,
+    description: "Track engagement"
+  },
+  {
+    id: "resources",
+    label: "Resources",
+    icon: FileText,
+    description: "Study materials"
   },
   {
     id: "detox",
