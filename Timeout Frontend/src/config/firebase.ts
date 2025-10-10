@@ -1,6 +1,7 @@
 // Firebase configuration for frontend
 import { initializeApp } from 'firebase/app';
 import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
 
 // Firebase config - using environment variables
 const firebaseConfig = {
@@ -16,16 +17,22 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const functions = getFunctions(app);
-// Connect to emulator in development
+const auth = getAuth(app);
+
+// Connect to emulators in development
 if (import.meta.env.DEV) {
   try {
     connectFunctionsEmulator(functions, "127.0.0.1", 5001);
-    console.log('🔧 Connected to Functions emulator on port 5001');
+    connectAuthEmulator(auth, "http://127.0.0.1:9099");
+    console.log('🔧 Connected to Functions and Auth emulators');
   } catch (error) {
-    console.warn('⚠️ Could not connect to Functions emulator:', error);
+    console.warn('⚠️ Could not connect to emulators:', error);
   }
 }
 
+
+// Export Firebase services
+export { auth };
 
 // Callable functions (enabled)
 export const createRoom = httpsCallable(functions, 'createRoom');
