@@ -74,11 +74,13 @@ npm run dev
 ✅ **Ready in 2 minutes!**
 
 ### **Option 2: Full Setup** (For development/production)
-```bash
+
 # Get the code
+```bash
 git clone https://github.com/YourUsername/Timeout-DEMO.git
 cd Timeout-DEMO
-
+```
+```bash
 # Setup frontend
 cd "Timeout Frontend"
 npm install
@@ -213,6 +215,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Ready to focus? [Get started now!](#-quick-start) 🚀**
+```bash
 npm run dev
 ```
 
