@@ -50,7 +50,7 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex page-transition">
       <Sidebar
         activeTab={currentView}
         onTabChange={onViewChange}
@@ -58,9 +58,9 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
       
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="h-16 border-b border-border bg-background px-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-semibold">
+        <header className="h-16 border-b border-border bg-card px-6 flex items-center justify-between shadow-card">
+          <div className="space-y-1">
+            <h1 className="text-xl font-semibold text-foreground">
               {getPageTitle(currentView)}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -70,8 +70,9 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
           
           <div className="flex items-center space-x-4">
             {currentView === "timer" && (
-              <div className="text-sm text-muted-foreground">
-                Ready to focus
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                <span className="text-sm text-muted-foreground">Ready to focus</span>
               </div>
             )}
             
@@ -90,8 +91,10 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 overflow-auto">
-          {children}
+        <main className="flex-1 p-6 overflow-auto bg-background-secondary">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

@@ -17,7 +17,9 @@ import {
   Award,
   CheckCircle2,
   Circle,
-  Timer
+  Timer,
+  Pause,
+  RotateCcw
 } from "lucide-react";
 
 interface Task {
@@ -27,6 +29,11 @@ interface Task {
   priority: "high" | "medium" | "low";
   estimatedPomodoros: number;
   category: string;
+  timer?: {
+    isRunning: boolean;
+    timeLeft: number;
+    totalTime: number;
+  };
 }
 
 interface Session {
@@ -46,7 +53,12 @@ export const TodayView = () => {
       completed: false,
       priority: "high",
       estimatedPomodoros: 3,
-      category: "Development"
+      category: "Development",
+      timer: {
+        isRunning: false,
+        timeLeft: 25 * 60, // 25 minutes in seconds
+        totalTime: 25 * 60
+      }
     },
     {
       id: "2", 
@@ -62,7 +74,12 @@ export const TodayView = () => {
       completed: false,
       priority: "medium",
       estimatedPomodoros: 2,
-      category: "Documentation"
+      category: "Documentation",
+      timer: {
+        isRunning: false,
+        timeLeft: 25 * 60, // 25 minutes in seconds
+        totalTime: 25 * 60
+      }
     },
     {
       id: "4",
@@ -111,6 +128,50 @@ export const TodayView = () => {
   const toggleTask = (taskId: string) => {
     setTasks(prev => prev.map(task => 
       task.id === taskId ? { ...task, completed: !task.completed } : task
+    ));
+  };
+
+  const startTaskTimer = (taskId: string) => {
+    setTasks(prev => prev.map(task => 
+      task.id === taskId 
+        ? { 
+            ...task, 
+            timer: {
+              isRunning: true,
+              timeLeft: task.timer?.timeLeft ?? 25 * 60, // 25 minutes in seconds
+              totalTime: task.timer?.totalTime ?? 25 * 60
+            }
+          } 
+        : task
+    ));
+  };
+
+  const pauseTaskTimer = (taskId: string) => {
+    setTasks(prev => prev.map(task => 
+      task.id === taskId && task.timer
+        ? { 
+            ...task, 
+            timer: {
+              ...task.timer,
+              isRunning: false
+            }
+          } 
+        : task
+    ));
+  };
+
+  const resetTaskTimer = (taskId: string) => {
+    setTasks(prev => prev.map(task => 
+      task.id === taskId && task.timer
+        ? { 
+            ...task, 
+            timer: {
+              ...task.timer,
+              isRunning: false,
+              timeLeft: task.timer.totalTime
+            }
+          } 
+        : task
     ));
   };
 
@@ -244,10 +305,36 @@ export const TodayView = () => {
                   </div>
                 </div>
 
-                {!task.completed && (
-                  <Button size="sm" variant="ghost">
-                    <Play className="h-4 w-4" />
-                  </Button>
+                {!task.completed && task.timer && (
+                  <div className="flex items-center space-x-1">
+                    {!task.timer.isRunning ? (
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => startTaskTimer(task.id)}
+                        title="Start timer"
+                      >
+                        <Play className="h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={() => pauseTaskTimer(task.id)}
+                        title="Pause timer"
+                      >
+                        <Pause className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button 
+                      size="sm" 
+                      variant="ghost"
+                      onClick={() => resetTaskTimer(task.id)}
+                      title="Reset timer"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                    </Button>
+                  </div>
                 )}
               </div>
             ))}

@@ -84,9 +84,15 @@ export default {
         'glass': 'var(--shadow-glass)',
         'glow': 'var(--shadow-glow)',
         'card': 'var(--shadow-card)',
+        'hover': 'var(--shadow-hover)',
       },
       backdropBlur: {
         'glass': '16px',
+      },
+      transitionProperty: {
+        'smooth': 'var(--transition-smooth)',
+        'bounce': 'var(--transition-bounce)',
+        'fast': 'var(--transition-fast)',
       },
       keyframes: {
         "accordion-down": {

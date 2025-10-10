@@ -116,9 +116,9 @@ export const Sidebar = ({ activeTab, onTabChange, className }: SidebarProps) => 
       variant="ghost"
       size={isCollapsed ? "sm" : "default"}
       className={cn(
-        "w-full justify-start h-10 px-3 mb-1 text-left font-medium transition-all duration-200",
+        "w-full justify-start h-11 px-3 mb-1 text-left font-medium transition-smooth hover-lift",
         isActive 
-          ? "bg-primary/10 text-primary border-r-2 border-primary shadow-sm" 
+          ? "bg-primary/10 text-primary border-r-2 border-primary shadow-card" 
           : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
         isCollapsed ? "px-2" : "px-3"
       )}
@@ -149,7 +149,7 @@ export const Sidebar = ({ activeTab, onTabChange, className }: SidebarProps) => 
 
   return (
     <div className={cn(
-      "bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out",
+      "bg-card border-r border-border flex flex-col transition-smooth shadow-card",
       isCollapsed ? "w-16" : "w-64",
       className
     )}>
@@ -186,15 +186,17 @@ export const Sidebar = ({ activeTab, onTabChange, className }: SidebarProps) => 
       <div className="flex-1 p-3 space-y-1">
         {/* Quick Stats */}
         {!isCollapsed && (
-          <div className="mb-6 p-3 bg-accent/30 rounded-lg">
-            <div className="flex items-center space-x-2 mb-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Today's Focus</span>
+          <div className="mb-6 p-4 bg-muted/50 rounded-xl border border-border/50 hover-lift transition-smooth">
+            <div className="flex items-center space-x-2 mb-3">
+              <div className="w-6 h-6 bg-primary/20 rounded-lg flex items-center justify-center">
+                <Clock className="h-3 w-3 text-primary" />
+              </div>
+              <span className="text-sm font-medium text-foreground">Today's Focus</span>
             </div>
-            <div className="text-lg font-bold text-foreground">2h 45m</div>
+            <div className="text-xl font-bold text-foreground">2h 45m</div>
             <div className="text-xs text-muted-foreground">Goal: 4h</div>
-            <div className="w-full bg-muted rounded-full h-1.5 mt-2">
-              <div className="bg-primary h-1.5 rounded-full w-2/3 transition-all"></div>
+            <div className="w-full bg-border rounded-full h-2 mt-3">
+              <div className="bg-primary h-2 rounded-full transition-all duration-500 glow" style={{ width: '68%' }}></div>
             </div>
           </div>
         )}
