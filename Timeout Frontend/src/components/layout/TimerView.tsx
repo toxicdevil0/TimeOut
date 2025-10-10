@@ -14,8 +14,12 @@ import {
   Clock,
   Target,
   TrendingUp,
-  CheckCircle
+  CheckCircle,
+  Zap
 } from "lucide-react";
+import { useTokens } from "@/contexts/TokenContext";
+import { useTokenNotifications } from "@/hooks/useTokenNotifications";
+import { TokenChangeAnimation } from "@/components/tokens/TokenDisplay";
 
 type TimerPhase = "focus" | "shortBreak" | "longBreak";
 type TimerState = "idle" | "running" | "paused";
@@ -23,6 +27,8 @@ type TimerState = "idle" | "running" | "paused";
 export const TimerView = () => {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [timerState, setTimerState] = useState<TimerState>("idle");
+  const { awardTokens } = useTokens();
+  const { notifications, showNotification, hideNotification } = useTokenNotifications();
   const [currentPhase, setCurrentPhase] = useState<TimerPhase>("focus");
   const [sessionCount, setSessionCount] = useState(0);
 
@@ -47,11 +53,45 @@ export const TimerView = () => {
     return () => clearInterval(interval);
   }, [timerState, timeLeft]);
 
-  const handlePhaseComplete = () => {
+  const handlePhaseComplete = async () => {
     setTimerState("idle");
     
     if (currentPhase === "focus") {
-      setSessionCount(count => count + 1);
+      // Award tokens for completed focus session
+      const sessionDuration = durations.focus;
+      const baseTokens = sessionDuration; // 1 token per minute
+      const bonusTokens = Math.floor(sessionDuration * 0.4); // 40% bonus for completion
+      const totalTokens = baseTokens + bonusTokens;
+      
+      try {
+        await awardTokens(totalTokens, `Focus session completed (${sessionDuration} min)`, 'focus', {
+          duration: sessionDuration,
+          sessionId: `timer-${Date.now()}`
+        });
+        
+        showNotification(totalTokens, 'earned', `${sessionDuration} min focus session`);
+      } catch (error) {
+        console.error('Failed to award tokens:', error);
+        showNotification(totalTokens, 'earned', `${sessionDuration} min focus session (offline)`);
+      }
+      
+      setSessionCount(count => {
+        const newCount = count + 1;
+        
+        // Award streak bonus every 4 sessions
+        if (newCount % 4 === 0) {
+          const streakBonus = 100;
+          awardTokens(streakBonus, `4-session streak bonus!`, 'streak').then(() => {
+            showNotification(streakBonus, 'earned', 'Streak bonus!');
+          }).catch(error => {
+            console.error('Failed to award streak bonus:', error);
+            showNotification(streakBonus, 'earned', 'Streak bonus! (offline)');
+          });
+        }
+        
+        return newCount;
+      });
+      
       // Switch to break (short break or long break every 4 sessions)
       const nextPhase = sessionCount % 4 === 3 ? "longBreak" : "shortBreak";
       setCurrentPhase(nextPhase);
@@ -97,6 +137,19 @@ export const TimerView = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Token Notifications */}
+      <div className="fixed top-20 right-6 z-50 space-y-2">
+        {notifications.map(notification => (
+          <TokenChangeAnimation
+            key={notification.id}
+            amount={notification.amount}
+            type={notification.type}
+            reason={notification.reason}
+            visible={notification.visible}
+            onAnimationEnd={() => hideNotification(notification.id)}
+          />
+        ))}
+      </div>
       {/* Main Timer Card */}
       <Card className="border-border shadow-card">
         <CardContent className="p-8">
@@ -278,6 +331,14 @@ export const TimerView = () => {
                 <span className="text-sm">Focus Time</span>
               </div>
               <span className="font-medium">{sessionCount * 25}m</span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Zap className="h-4 w-4 text-yellow-500" />
+                <span className="text-sm">Tokens Earned</span>
+              </div>
+              <span className="font-medium text-yellow-600">{sessionCount * 35} FP</span>
             </div>
 
             <div className="pt-4">

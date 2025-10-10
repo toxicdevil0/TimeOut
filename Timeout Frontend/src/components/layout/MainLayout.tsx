@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { LogoutButton } from "../auth/LogoutButton";
+import { TokenDisplay } from "../tokens/TokenDisplay";
+import { useTokens } from "@/contexts/TokenContext";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -9,6 +11,8 @@ interface MainLayoutProps {
 }
 
 export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutProps) => {
+  const { tokens } = useTokens();
+  
   const getPageTitle = (view: string) => {
     const titles: Record<string, string> = {
       dashboard: "Dashboard",
@@ -70,7 +74,16 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
                 Ready to focus
               </div>
             )}
-            <div className="flex items-center">
+            
+            {/* Token Balance Display */}
+            <div className="flex items-center space-x-4">
+              <div className="px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+                <TokenDisplay 
+                  amount={tokens.availableTokens} 
+                  variant="compact"
+                  animated={true}
+                />
+              </div>
               <LogoutButton variant="header" />
             </div>
           </div>

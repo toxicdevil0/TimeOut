@@ -11,10 +11,17 @@ import {
   Calendar,
   BarChart3,
   Play,
-  Award
+  Award,
+  Zap
 } from "lucide-react";
+import { useTokens } from "@/contexts/TokenContext";
+import { TokenDisplay } from "../tokens/TokenDisplay";
+import { TokenStatsDashboard } from "../tokens/TokenStatsDashboard";
+import { TokenShop } from "../tokens/TokenShop";
 
 export const DashboardOverview = () => {
+  const { tokens } = useTokens();
+  
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -23,10 +30,13 @@ export const DashboardOverview = () => {
           <h1 className="text-2xl font-bold text-foreground">Good morning, Student!</h1>
           <p className="text-muted-foreground">Ready to focus? You have 3 study sessions planned today.</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90">
-          <Play className="mr-2 h-4 w-4" />
-          Start Focus Session
-        </Button>
+        <div className="flex items-center space-x-2">
+          <TokenShop />
+          <Button className="bg-primary hover:bg-primary/90">
+            <Play className="mr-2 h-4 w-4" />
+            Start Focus Session
+          </Button>
+        </div>
       </div>
 
       {/* Quick Stats Grid */}
@@ -67,12 +77,19 @@ export const DashboardOverview = () => {
 
         <Card className="border-border shadow-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Group Study</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Focus Points</CardTitle>
+            <Zap className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
-            <p className="text-xs text-muted-foreground">Active sessions</p>
+            <div className="text-2xl font-bold">
+              <TokenDisplay 
+                amount={tokens.availableTokens} 
+                variant="minimal" 
+                showIcon={false}
+                showLabel={false}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">+{tokens.todayTokens} today</p>
           </CardContent>
         </Card>
       </div>
@@ -194,6 +211,11 @@ export const DashboardOverview = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Token Stats Dashboard */}
+      <div className="mt-8">
+        <TokenStatsDashboard />
       </div>
     </div>
   );
