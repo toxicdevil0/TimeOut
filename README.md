@@ -1,323 +1,700 @@
-# ⏰ TimeOut - Focus & Study App
+# ⏰ TimeOut — Focus & Study App
 
-**Status:** ✅ **Ready to Run** - Clone and start immediately!  
-**Demo:** [Live Preview](http://localhost:8080) (after setup)  
-**Setup Time:** 5 minutes for demo mode, 15 minutes for full features
+A comprehensive productivity platform for students and educators with focus tracking, real-time collaboration, and behavioral analytics.
 
-A modern study application with timer functionality, group sessions, and clean aesthetics.
+Status: ✅ Ready to Run — clone and start immediately!
+
+Demo (local): http://localhost:5173 (Vite dev) or http://localhost:8080 (Docker)
+
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6.2-3178C6?logo=typescript)
+![Firebase](https://img.shields.io/badge/Firebase-Latest-FFCA28?logo=firebase)
 
 ---
 
-## 🚀 **Quick Start**
+## Overview
 
-**Want to try it now?** Just run:
+TimeOut is a full-featured student productivity and classroom management system designed to improve focus, track progress, and facilitate collaborative learning. Built with React and Firebase, it provides students and teachers with powerful tools to maximize learning effectiveness through behavioral science and real-time analytics.
+
+Key differentiators:
+- Token-based reward economy (Focus Points) that incentivizes productive study habits
+- Digital Detox system with fullscreen enforcement and app restriction concepts
+- Real-time collaborative study rooms with synchronized timers
+- Teacher dashboards with live student monitoring and analytics
+- AI-ready schedule templates and automated planning concepts
+- Comprehensive analytics tracking focus patterns, streaks, and productivity scores
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- npm 9+ (or yarn/pnpm)
+- Git
+- Optional (for full setup): Firebase CLI (`npm i -g firebase-tools`)
+
+### Option 1: Demo Mode (Recommended to try it now)
+No external services required. Local-only data with mock/demo screens.
 
 ```bash
-git clone https://github.com/YourUsername/Timeout-DEMO.git
-cd Timeout-DEMO/Timeout\ Frontend
-npm install && npm run dev
-```
-
-**🎉 App starts at http://localhost:8080 in demo mode!**
-
----
-
-## 🎯 **Features**
-
-### ✅ **Working Features**
-- **⏱️ Focus Timer**: Pomodoro-style study sessions with localStorage persistence
-- **🎨 Beautiful UI**: Clean green theme with glassmorphism effects
-- **📱 Responsive Design**: Works perfectly on desktop and mobile
-- **🔧 Demo Mode**: Runs immediately without any external setup
-
-### 🎭 **Demo Features** (Interactive UI)
-- **👥 Group Study**: Virtual study sessions with mock participants
-- **📊 Digital Detox**: Analytics dashboard with generated data
-- **🏆 Community**: Achievements and leaderboards with sample data
-- **📸 Study Verification**: Camera integration UI (simulated)
-
-### 🔧 **Full Features** (With Backend Setup)
-- **🔐 Real Authentication**: Clerk-based user management
-- **☁️ Cloud Sync**: Firebase Firestore for data persistence
-- **👥 Live Group Sessions**: Real multiplayer study rooms
-- **📊 Real Analytics**: Actual usage tracking and insights
-
----
-
-## 🛠️ **Tech Stack**
-
-### Frontend
-- **React 18** with TypeScript
-- **Vite** for lightning-fast development
-- **Tailwind CSS** for beautiful styling
-- **Shadcn/ui** components for consistent design
-- **React Router** for navigation
-- **Lucide React** for icons
-
-### Backend (Optional)
-- **Firebase Functions** with TypeScript
-- **Firebase Firestore** for real-time data
-- **Clerk** for authentication
-- **Express.js** API endpoints
-
----
-
-## 📦 **Installation Options**
-
-### **Option 1: Demo Mode** (Recommended for trying out)
-```bash
-git clone https://github.com/YourUsername/Timeout-DEMO.git
-cd "Timeout-DEMO/Timeout Frontend"
+git clone https://github.com/toxicdevil0/TimeOut.git
+cd "TimeOut/TimeOut Frontend"
 npm install
 npm run dev
+# Opens at http://localhost:5173
 ```
-✅ **Ready in 2 minutes!**
 
-### **Option 2: Full Setup** (For development/production)
+### Option 2: Full Setup (Backend + Cloud features)
+Enables authentication, Firestore persistence, and real-time features.
 
-# Get the code
-```bash
-git clone https://github.com/YourUsername/Timeout-DEMO.git
-cd Timeout-DEMO
+1) Get a Clerk publishable key (optional for real auth)
+   - Sign up: https://clerk.com
+
+2) Create a Firebase project
+   - Console: https://console.firebase.google.com
+   - Enable Auth (Email/Password & Google), Firestore, and Storage
+
+3) Configure frontend environment variables
+Create a `.env` file in `TimeOut Frontend`:
+```env
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_or_test
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+# Optional: Local emulator
+VITE_USE_EMULATOR=false
+VITE_EMULATOR_HOST=localhost
 ```
-```bash
-# Setup frontend
-cd "Timeout Frontend"
-npm install
-cp .env.example .env  # Configure with your API keys
 
-# Setup backend
-cd "../Timeout Backend"
+4) Backend setup
+```bash
+cd "../../TimeOut Backend"
 npm install
 cd functions && npm install && cd ..
-
-# Start everything
-npm run dev        # Frontend: http://localhost:8080
-firebase emulators:start  # Backend: http://localhost:5001
 ```
-✅ **Full setup in 15 minutes!**
 
----
-
-## 🔐 **Environment Setup**
-
-### **Demo Mode** (Default)
-No configuration needed! The app includes a pre-configured `.env` file for demo mode.
-
-### **Full Features**
-1. **Get Clerk API key**: [Sign up at Clerk.com](https://clerk.com)
-2. **Create Firebase project**: [Firebase Console](https://console.firebase.google.com)
-3. **Configure `.env`**:
-   ```bash
-   VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_key_here
-   VITE_FIREBASE_API_KEY=your_firebase_api_key
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   # ... other Firebase config
-   ```
-
-**📖 Full setup guide:** See [SETUP_GUIDE.md](./SETUP_GUIDE.md)
-
----
-
-## 🎮 **Usage**
-
-### **Study Timer**
-1. Set your focus duration (default: 25 minutes)
-2. Choose a subject or add custom ones
-3. Click "Start" to begin your session
-4. Take breaks between sessions
-5. Track your progress over time
-
-### **Group Study** (Demo/Real)
-1. Browse available study rooms
-2. Join a room or create your own
-3. Set room visibility and participant limits
-4. Study together with timer synchronization
-5. Optional: Camera check-ins for accountability
-
-### **Digital Detox** (Demo/Real)
-1. Set app restrictions and time limits
-2. Start focus sessions with app blocking
-3. View usage analytics and insights
-4. Earn achievements for focused study time
-
----
-
-## 🧪 **Development**
-
-### **Available Scripts**
+5) Run locally
 ```bash
-# Frontend development
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Check code quality
+# Frontend
+cd "../TimeOut Frontend"
+npm run dev  # http://localhost:5173
 
-# Backend development
-firebase emulators:start    # Start local backend
-firebase deploy            # Deploy to production
-npm test                   # Run backend tests
-```
-
-### **Project Structure**
-```
-📦 Timeout-DEMO/
-├── 📁 Timeout Frontend/    ← React app
-│   ├── 📁 src/components/ ← UI components
-│   ├── 📁 src/config/     ← Firebase & app config
-│   └── 📁 src/pages/      ← Route components
-└── 📁 Timeout Backend/     ← Firebase functions
-    ├── 📁 functions/src/  ← TypeScript functions
-    └── 📄 firebase.json   ← Firebase configuration
+# Backend (from TimeOut Backend)
+cd "../TimeOut Backend"
+firebase emulators:start  # Emulator UI at http://localhost:4000
 ```
 
 ---
 
-## 🎯 **What's Real vs Demo**
+## 🎯 Features
 
-| Feature | Demo Mode | Full Setup |
-|---------|-----------|------------|
-| Study Timer | ✅ Fully functional | ✅ + Cloud sync |
-| User Interface | ✅ Complete UI | ✅ Complete UI |
-| Authentication | 🎭 Mock login | ✅ Real Clerk auth |
-| Group Rooms | 🎭 Sample data | ✅ Real multiplayer |
-| Data Storage | 📱 localStorage | ☁️ Firebase Firestore |
-| Analytics | 🎭 Generated data | ✅ Real usage data |
+### ✅ Working (Out-of-the-box)
+- Focus Timer (Pomodoro, Deep Work, Breaks) with local persistence
+- Beautiful, responsive UI (green theme, glassmorphism)
+- Demo Mode: runs immediately without external setup
+- Session history (local)
+- Basic analytics (local/demo)
 
-**✅ = Fully functional | 🎭 = Demo/Interactive mockup | 📱 = Local only | ☁️ = Cloud synced**
+### 🎭 Demo/Interactive UI
+- Group Study: virtual rooms, timer sync (simulated)
+- Digital Detox: analytics views with generated data
+- Community: achievements and leaderboards with sample data
+- Camera verification UI (simulated)
 
----
-
-## 🤝 **Contributing**
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
----
-
-## 📝 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### ☁️ Full Features (with Backend)
+- Real Authentication (Clerk + Firebase)
+- Cloud Sync (Firestore persistence)
+- Live Group Sessions (real-time rooms)
+- Real Analytics (usage tracking & insights)
+- Callable Functions for Digital Detox, Tokens, Rooms, Schedule
 
 ---
 
-## 🙏 **Acknowledgments**
+## 🛠 Tech Stack
 
-- **Clerk** for authentication infrastructure
-- **Firebase** for backend services
-- **Tailwind CSS** for beautiful styling
-- **Shadcn/ui** for component library
-- **Lucide** for icon library
+### Frontend
+- React 18 + TypeScript
+- Vite (fast dev/build)
+- Tailwind CSS + shadcn/ui
+- React Router DOM
+- Lucide React (icons)
+- React Hook Form + Zod
+- date-fns
+
+### Backend (Optional)
+- Firebase Cloud Functions (Node.js 18)
+- Firebase Auth, Firestore, Storage
+- Express.js endpoints (as needed)
+- Clerk webhooks for user sync
 
 ---
 
-**Ready to focus? [Get started now!](#-quick-start) 🚀**
-```bash
-npm run dev
+## 🏗 Project Structure
+
+```
+TimeOut/
+├── TimeOut Frontend/           # React frontend application
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── auth/           # Authentication components
+│   │   │   ├── dashboard/      # Dashboard views
+│   │   │   │   └── tabs/       # Dashboard tab components
+│   │   │   ├── layout/         # Layout components
+│   │   │   ├── tokens/         # Token system UI
+│   │   │   └── ui/             # shadcn UI components
+│   │   ├── contexts/           # React Context providers
+│   │   ├── hooks/              # Custom React hooks
+│   │   ├── config/             # Firebase & app config
+│   │   ├── lib/                # Utility functions
+│   │   ├── pages/              # Page components
+│   │   └── utils/              # Helpers
+│   ├── public/                 # Static assets
+│   └── package.json
+│
+├── TimeOut Backend/            # Firebase backend
+│   ├── functions/
+│   │   ├── src/
+│   │   │   ├── callable/
+│   │   │   │   ├── digitalDetox.ts
+│   │   │   │   ├── rooms.ts
+│   │   │   │   ├── schedule.ts
+│   │   │   │   ├── tokens.ts
+│   │   │   │   └── users.ts
+│   │   │   ├── types/
+│   │   │   ├── config/
+│   │   │   └── index.ts
+│   │   └── package.json
+│   ├── firebase.json
+│   ├── firestore.rules
+│   └── storage.rules
+│
+├── scripts/
+│   ├── setup.ps1
+│   ├── setup.sh
+│   ├── deploy-config.ps1
+│   └── deploy-config.sh
+│
+└── docs/
+    ├── BACKEND_INTEGRATION_SUMMARY.md
+    ├── DEPLOYMENT_GUIDE.md
+    ├── SETUP_GUIDE.md
+    ├── TOKEN_REWARD_SYSTEM_DESIGN.md
+    └── VERCEL_DEPLOYMENT_GUIDE.md
 ```
 
-The app will be available at `http://localhost:8080`
+---
 
-## 🎯 Usage
+## 🔐 Environment Setup
 
-### Demo Authentication
-1. Click "Continue with Google" or "Sign in with Email"
-2. Select your role (Student/Teacher)
-3. Access the dashboard
+### Demo Mode (Default)
+No configuration needed — runs with local/demo data.
+
+### Full Features
+1) Clerk
+   - Create app, copy publishable key to frontend `.env`
+   - Configure webhook endpoint (example): `https://<region>-<project>.cloudfunctions.net/clerkWebhook`
+   - Add webhook secret to backend `functions/.env`:
+ ```env
+ CLERK_WEBHOOK_SECRET=your_webhook_secret
+ ```
+
+2) Firebase
+   - Create project, enable Auth, Firestore, Storage
+   - Copy web config to frontend `.env`
+   - Deploy Firestore & Storage security rules:
+ ```bash
+ cd "TimeOut Backend"
+ firebase deploy --only firestore:rules
+ firebase deploy --only storage:rules
+ ```
+
+Rules enforce:
+- Users access only their data
+- Room participants read/write room data
+- Teachers manage their classes
+- Public templates readable by all
+
+---
+
+## 🎮 Usage
 
 ### Study Timer
-- Set focus duration (default: 25 minutes)
-- Start/pause timer
-- Timer persists across page refreshes
-- Completion alerts and progress tracking
+1) Set duration (25/50 custom)
+2) Choose subject
+3) Start session
+4) Take breaks between sessions
+5) Progress tracked in history
 
-### Group Sessions
-- Join virtual study rooms
-- Camera integration (demo mode)
-- Real-time participants display
+### Group Study
+- Browse and join public rooms or create a private one
+- Participant limits and visibility controls
+- Synchronized timers
+- Optional camera check-ins (demo)
 
-## 🏗️ Project Structure
+### Digital Detox
+- Set app restriction rules (concept/UI)
+- Start focus with fullscreen enforcement (concept/UI)
+- View usage analytics and recommendations
 
+### Students
+- Create account and select “Student”
+- Build weekly schedule and use templates
+- Start focus sessions and earn Focus Points
+- Join study groups
+- Track progress and streaks
+
+### Teachers
+- Create account and select “Teacher”
+- Create classes and start live sessions
+- Monitor student states and connections
+- Share resources
+- View class analytics and engagement
+
+---
+
+## 💰 Token System (Focus Points)
+
+Earning:
+- 25-minute session: 25 FP
+- 50-minute deep work: 60 FP
+- 7-day streak: 300 FP bonus
+- Group session participation: 15–40 FP
+- Share template: 50 FP (+10 FP per use)
+
+Spending:
+- Shop: Themes, Avatar frames, Features, Badges
+- Items have rarity (Common→Legendary)
+- Purchase logs recorded
+
+---
+
+## 🧪 Development
+
+### Frontend scripts
+```bash
+npm run dev       # Start dev server
+npm run build     # Build for production
+npm run preview   # Preview production build
+npm run lint      # ESLint
 ```
-Timeout Frontend/
-├── src/
-│   ├── components/          # React components
-│   │   ├── auth/           # Authentication components
-│   │   ├── dashboard/      # Dashboard and tabs
-│   │   └── ui/             # Reusable UI components
-│   ├── config/             # Configuration files
-│   ├── hooks/              # Custom React hooks
-│   ├── lib/                # Utility functions
-│   └── pages/              # Page components
-├── public/                 # Static assets
-└── package.json           # Dependencies and scripts
+
+### Backend scripts
+```bash
+firebase emulators:start     # Start local backend
+firebase deploy              # Deploy functions, rules
+firebase functions:log       # View logs
+npm test                     # Functions tests (from functions/)
 ```
 
-## 🔧 Scripts
+---
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+## 🔌 API Documentation (Firebase Callable Functions)
 
-## 🎨 Design System
+All functions expect authenticated requests in full setup.
 
-### Colors
-- **Primary**: Green (RGB 11, 110, 79)
-- **Background**: Ghost White (RGB 248, 248, 255)
-- **Glass Effects**: Backdrop blur with transparency
+### Digital Detox
+`createAppRestriction(data)`
+```ts
+type ScheduleSlot = { day: number; start: string; end: string };
+type AppRestriction = {
+  id: string;
+  appName: string;
+  packageName?: string;
+  websiteUrl?: string;
+  restrictionType: 'complete' | 'scheduled' | 'time_limited';
+  allowedTime?: number;
+  scheduledTimes?: ScheduleSlot[];
+};
 
-### Components
-The app uses a curated set of UI components:
-- Buttons, Cards, Inputs, Labels
-- Alerts, Badges, Dialogs
-- Toast notifications, Tooltips
+Request: {
+  appName: string;
+  packageName?: string;
+  websiteUrl?: string;
+  restrictionType: 'complete' | 'scheduled' | 'time_limited';
+  allowedTime?: number;
+  scheduledTimes?: ScheduleSlot[];
+}
+
+Response: {
+  success: boolean;
+  restrictionId: string;
+  restriction: AppRestriction;
+}
+```
+
+`startFocusSession(data)`
+```ts
+type FocusSessionType = 'focus' | 'break' | 'deep_work';
+type FocusSession = {
+  id: string;
+  sessionType: FocusSessionType;
+  duration: number;
+  startedAt: number;
+  restrictedApps?: string[];
+  allowedApps?: string[];
+};
+
+Request: {
+  sessionType: FocusSessionType;
+  duration: number;
+  restrictedApps?: string[];
+  allowedApps?: string[];
+}
+
+Response: {
+  success: boolean;
+  sessionId: string;
+  session: FocusSession;
+}
+```
+
+`endFocusSession(data)`
+```ts
+Request: {
+  sessionId: string;
+  status: 'completed' | 'interrupted';
+}
+
+Response: {
+  success: boolean;
+  actualDuration: number;
+  productivityScore: number; // 1–100
+}
+```
+
+`getFocusAnalytics()`
+```ts
+type FocusAnalytics = {
+  totalFocusMinutes: number;
+  sessionsCompleted: number;
+  focusScore: number;
+  streakDays: number;
+};
+
+Response: {
+  todayStats: FocusAnalytics;
+  weeklyTrend: number[];
+  monthlyTrend: number[];
+  achievements: string[];
+  recommendations: string[];
+}
+```
+
+### Tokens
+`saveTokens(data)`
+```ts
+type TokenStats = { balance: number; lifetimeEarned: number; streakDays: number };
+type TokenTransaction = {
+  id: string;
+  type: 'earn' | 'spend';
+  amount: number;
+  note?: string;
+  createdAt: number;
+};
+
+Request: {
+  tokenStats: TokenStats;
+  transactions: TokenTransaction[];
+}
+
+Response: {
+  success: boolean;
+  message: string;
+}
+```
+
+`loadTokens()`
+```ts
+Response: {
+  tokenStats: TokenStats | null;
+  transactions: TokenTransaction[];
+}
+```
+
+### Rooms
+`createRoom(data)`
+```ts
+type Room = {
+  id: string;
+  name: string;
+  isPublic: boolean;
+  maxParticipants: number;
+  participants: string[];
+  status: 'active' | 'waiting' | 'ended';
+};
+
+Request: {
+  name: string;
+  isPublic: boolean;
+  maxParticipants: number;
+}
+
+Response: {
+  success: boolean;
+  roomId: string;
+  room: Room;
+}
+```
+
+`joinRoom(data)`
+```ts
+Request: {
+  roomId: string;
+}
+
+Response: {
+  success: boolean;
+  room: Room;
+}
+```
+
+### Schedule
+`saveUserSchedule(data)`
+```ts
+type Event = { id: string; title: string; start: string; end: string; subject?: string; priority?: number; notes?: string };
+type Template = { id: string; name: string; slots: Array<{ day: number; start: string; end: string; subject?: string }> };
+
+Request: {
+  scheduleData: {
+    events: Event[];
+    templates: Template[];
+  }
+}
+
+Response: {
+  success: boolean;
+}
+```
+
+`getUserSchedule()`
+```ts
+Response: {
+  events: Event[];
+  templates: Template[];
+}
+```
+
+---
+
+## 🧰 Testing
+
+### Frontend
+```bash
+cd "TimeOut Frontend"
+npm run test
+npm run test:ui
+npm run coverage
+```
+
+### Backend
+```bash
+cd "TimeOut Backend/functions"
+npm run test
+```
+
+End-to-end test scripts (examples):
+- `production-verification.js`
+- `quick-token-check.js`
+- `simple-token-test.js`
+- `brutal-audit.js` (comprehensive)
+
+---
 
 ## 🚀 Deployment
 
-### Build for Production
-
+### Frontend — Vercel
 ```bash
-npm run build
+cd "TimeOut Frontend"
+npm install -g vercel
+vercel
+```
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Install Command: `npm install`
+- Set env vars: `VITE_*` keys from your `.env`
+
+See [docs/VERCEL_DEPLOYMENT_GUIDE.md](docs/VERCEL_DEPLOYMENT_GUIDE.md) for details.
+
+### Backend — Firebase
+```bash
+cd "TimeOut Backend"
+firebase deploy                       # All
+firebase deploy --only functions      # Functions only
+firebase deploy --only firestore:rules
+firebase deploy --only storage:rules
 ```
 
-### Deploy to Static Hosting
-The built files in `dist/` can be deployed to:
-- Vercel
-- Netlify
-- GitHub Pages
-- Any static hosting service
-
-## 🔮 Future Enhancements
-
-- [ ] Real authentication system
-- [ ] Database persistence
-- [ ] Calendar integration
-- [ ] Study analytics
-- [ ] Mobile app
-- [ ] Collaborative features
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Icons by [Lucide](https://lucide.dev/)
-- UI components by [shadcn/ui](https://ui.shadcn.com/)
-- Design inspiration from modern study apps
+### Docker (Frontend)
+```bash
+cd "TimeOut Frontend"
+docker build -t timeout-frontend .
+docker run -d -p 8080:80 --name timeout timeout-frontend
+# Open http://localhost:8080
+```
 
 ---
 
-**Note**: This is currently a demo application. For production use, implement proper authentication, database persistence, and security measures.
+## 📈 Performance
+
+Frontend:
+- Code splitting via dynamic imports
+- Image lazy loading and sizing
+- Tree-shaking with Vite
+- Optional service worker for offline support
+
+Backend:
+- Minimized cold starts
+- Client-side caching of Firestore data
+- Batched writes and composite indexes
+- Basic rate limiting concepts for callable functions
+
+---
+
+## 🔒 Security
+
+- Clerk + Firebase Auth for secure user management
+- Verification on all backend calls (full setup)
+- Webhook signature validation (Clerk)
+- Firestore/Storage rules for least-privilege access
+- HTTPS-only communication
+- No secrets in client code
+- Input validation and XSS protection via React
+
+---
+
+## 🐛 Troubleshooting
+
+Frontend won’t start:
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+Firebase connection errors:
+- Verify `.env` keys
+- Check Firebase project config
+- Ensure billing if needed for specific features
+- Confirm emulator vs production settings
+
+Token system not persisting:
+- Confirm auth status
+- Check Firestore rules and indexes
+- Inspect browser console
+- Ensure backend deployed or emulator running
+
+Emulator issues:
+```bash
+# macOS/Linux
+killall java
+# Windows
+taskkill /F /IM java.exe
+
+firebase emulators:start
+```
+
+Clerk auth fails:
+- Verify publishable key
+- Check app status in Clerk dashboard
+- Confirm webhook URL and secret
+- Ensure allowed origins/URLs configured
+
+Debugging:
+```bash
+# Backend logs
+firebase functions:log
+```
+
+---
+
+## 🤝 Contributing
+
+1) Fork the repository
+2) Create a feature branch: `git checkout -b feat/amazing-feature`
+3) Follow code style (ESLint + Prettier)
+4) Write tests
+5) Update docs
+6) Open a Pull Request
+
+Standards:
+- TypeScript strict mode
+- ESLint enforced
+- Prettier formatting
+- Conventional Commits
+- Component-level docs where applicable
+
+Areas to contribute:
+- Mobile app (React Native)
+- i18n
+- New token shop content
+- Schedule template marketplace
+- Analytics visualizations
+- Calendar integrations
+- Browser extension for blocking
+- Desktop app (Electron)
+
+---
+
+## 🗺 Roadmap
+
+- v2.1 (Q1 2025): Mobile app, offline mode, voice commands, calendar integration, teacher analytics
+- v2.2 (Q2 2025): AI recommendations, habits, goals, social challenges, custom sounds
+- v2.3 (Q3 2025): Browser extension, Electron desktop, institutional reporting, i18n, theme toggle
+
+Long-term:
+- LMS integrations (Canvas, Moodle)
+- Institutional dashboards
+- Public API
+- ML-driven personalized plans
+- Virtual study spaces with spatial audio
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+Third-party licenses:
+- React (MIT)
+- Firebase (Apache 2.0)
+- Tailwind CSS (MIT)
+- shadcn/ui (MIT)
+- Lucide Icons (ISC)
+- date-fns (MIT)
+
+---
+
+## 🙏 Acknowledgments
+
+Technologies:
+- React Team
+- Firebase Team
+- Vercel
+- Clerk
+- shadcn
+
+Design inspiration:
+- TickTick
+- Notion
+- Forest
+- Toggl
+
+Community:
+- Contributors, beta testers, students, and educators who shaped the feature set
+
+---
+
+## 📬 Contact
+
+- Maintainer: Ritik Prajapat
+- Email: prajapatritik73@gmail.com
+- GitHub: [@toxicdevil0](https://github.com/toxicdevil0)
+- Website: https://timeoutapp.com
+
+Built with focus, designed for productivity, powered by community.
