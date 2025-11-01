@@ -80,7 +80,7 @@ services:
 
   # Monitoring with Prometheus (optional)
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.45.0
     ports:
       - "9090:9090"
     volumes:
@@ -97,11 +97,11 @@ services:
 
   # Grafana Dashboard (optional)
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.2.0
     ports:
       - "3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-changeme123!}
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards

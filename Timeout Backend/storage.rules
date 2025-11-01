@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check authentication
+    function isAuthenticated() {
+      return request.auth != null && 
+             request.auth.token != null &&
+             request.auth.token.clerk_user_id != null;
+    }
+    
+    function getClerkUserId() {
+      return request.auth.token.clerk_user_id;
+    }
+    
+    // User profile images - users can read any, write their own
+    match /users/{userId}/profile/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+                      getClerkUserId() == userId &&
+                      resource.size < 5 * 1024 * 1024 && // 5MB limit
+                      resource.contentType.matches('image/.*');
+    }
+    
+    // Study session photos for verification
+    match /sessions/{sessionId}/photos/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() &&
+                      resource.size < 10 * 1024 * 1024 && // 10MB limit
+                      resource.contentType.matches('image/.*');
+    }
+    
+    // Study room shared files
+    match /studyRooms/{roomId}/files/{allPaths=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() &&
+                      resource.size < 50 * 1024 * 1024; // 50MB limit for documents
+    }
+    
+    // Deny everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

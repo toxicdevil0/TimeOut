@@ -2,40 +2,70 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Secure rules for hackathon demo
-    
-    // HACKATHON-SAFE RULES: Limited time window and rate limiting
-    
-    // Allow demo access for hackathon period only
-    match /users/{userId}/tokens/{document=**} {
-      allow read, write: if isValidDemoRequest();
+    // Helper functions for authentication
+    function isAuthenticated() {
+      return request.auth != null && 
+             request.auth.token != null &&
+             request.auth.token.clerk_user_id != null;
     }
     
+    function getClerkUserId() {
+      return request.auth.token.clerk_user_id;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && getClerkUserId() == userId;
+    }
+    
+    function isRoomMember(roomData) {
+      return isAuthenticated() && (
+        getClerkUserId() == roomData.hostId ||
+        getClerkUserId() in roomData.members
+      );
+    }
+    
+    // Users collection - authenticated users can read any profile, write their own
     match /users/{userId} {
-      allow read, write: if isValidDemoRequest();
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
     }
     
+    // User tokens subcollection - only owner can access
+    match /users/{userId}/tokens/{tokenDoc} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // Study rooms - public rooms readable by all auth users, private by members only
     match /studyRooms/{roomId} {
-      allow read, write: if isValidDemoRequest();
-    }
-    
-    match /sessions/{sessionId} {
-      allow read, write: if isValidDemoRequest();
-    }
-    
-    // Helper function for demo validation
-    function isValidDemoRequest() {
-      // Allow access only during hackathon dates (adjust as needed)
-      let hackathonStart = timestamp.date(2025, 10, 10); // Oct 10, 2025
-      let hackathonEnd = timestamp.date(2025, 10, 12);   // Oct 12, 2025
-      let now = request.time;
+      allow read: if isAuthenticated() && (
+        resource.data.visibility == 'public' ||
+        isRoomMember(resource.data)
+      );
       
-      return now >= hackathonStart && 
-             now <= hackathonEnd &&
-             request.resource.data.size() < 50; // Limit data size
+      allow create: if isAuthenticated() && 
+                       request.resource.data.hostId == getClerkUserId();
+      
+      allow update: if isAuthenticated() && (
+        getClerkUserId() == resource.data.hostId ||
+        // Members can join/leave rooms
+        (getClerkUserId() in resource.data.members)
+      );
+      
+      allow delete: if isAuthenticated() && 
+                       getClerkUserId() == resource.data.hostId;
     }
     
-    // Deny everything else
+    // Sessions collection - users can read all, create their own
+    match /sessions/{sessionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == getClerkUserId();
+      allow update: if false; // Sessions are immutable for analytics
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == getClerkUserId();
+    }
+    
+    // Deny everything else by default
     match /{document=**} {
       allow read, write: if false;
     }
