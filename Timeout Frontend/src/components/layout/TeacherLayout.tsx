@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
+import { ThemeSelector } from "../theme/ThemeSelector";
 
 interface TeacherLayoutProps {
   children: ReactNode;
@@ -30,6 +31,9 @@ export const TeacherLayout = ({ children }: TeacherLayoutProps) => {
         </div>
         
         <div className="flex items-center space-x-4">
+          {/* Theme Selector */}
+          <ThemeSelector />
+          
           <Button
             variant="outline"
             onClick={handleSignOut}

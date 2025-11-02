@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { ThemeSelector } from "../theme/ThemeSelector";
 import { 
   Settings, 
   Timer, 
@@ -23,7 +24,8 @@ import {
   Monitor,
   Download,
   Trash2,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from "lucide-react";
 
 export const SettingsView = () => {
@@ -365,6 +367,20 @@ export const SettingsView = () => {
                     <SelectItem value="orange">Orange</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <Separator />
+
+              {/* Anime Theme Section */}
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <Label>Anime Theme Experience</Label>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Switch between the default TimeOut experience and immersive anime-themed backgrounds
+                </p>
+                <ThemeSelector />
               </div>
 
               <Separator />
