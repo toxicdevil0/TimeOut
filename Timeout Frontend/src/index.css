@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import anime theme styles */
+@import './styles/animeThemes.css';
+
 /* TimeOut Design System - Focus & Study App */
 
 @layer base {
@@ -28,11 +31,11 @@
     --primary-glow: 212 92% 74%;             /* Lighter blue for glow */
 
     --secondary: 220 13% 18%;                /* #30363D - Muted surface */
-    --secondary-foreground: 220 9% 72%;      /* #B1BAC4 - Secondary text */
+    --secondary-foreground: 220 9% 80%;      /* #D0D7DE - Lighter secondary text for better contrast */
 
     /* Interactive Elements */
     --muted: 220 13% 14%;                    /* #21262D - Very muted background */
-    --muted-foreground: 220 9% 60%;          /* #8B949E - Muted text */
+    --muted-foreground: 220 9% 75%;          /* #C9D1D9 - Lighter muted text for better contrast */
 
     --accent: 212 92% 64%;                   /* Same as primary */
     --accent-foreground: 220 14% 95%;        /* #F6F8FA */
@@ -150,6 +153,17 @@
   .focus-ring:focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
+  }
+
+  /* Improved contrast for muted text */
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Ensure better contrast on blue backgrounds */
+  .bg-primary .text-muted-foreground,
+  .bg-accent .text-muted-foreground {
+    color: hsl(220 14% 95%) !important; /* Force white on blue backgrounds */
   }
 
   /* Scrollbar styling for dark theme */

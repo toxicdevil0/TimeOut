@@ -1,0 +1,396 @@
+/* Anime Theme Styles */
+
+/* Base anime theme effects */
+.anime-theme-active {
+  position: relative;
+  overflow: hidden;
+}
+
+.anime-theme-active::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--anime-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Demon Slayer Theme */
+.theme-demon-slayer {
+  --primary: #E67E22;
+  --primary-foreground: #FFFFFF;
+  --accent: #F39C12;
+}
+
+.theme-demon-slayer .breathing-effect {
+  animation: breathing-glow 2s ease-in-out infinite;
+}
+
+.theme-demon-slayer .flame-particle {
+  animation: flame-particles 3s ease-out infinite;
+}
+
+.theme-demon-slayer .sword-slash {
+  animation: sword-slash 0.5s ease-in-out;
+}
+
+/* Focus session cards with breathing effect */
+.theme-demon-slayer .focus-card {
+  box-shadow: 0 0 10px rgba(230, 126, 34, 0.3);
+  border: 1px solid rgba(230, 126, 34, 0.2);
+}
+
+.theme-demon-slayer .focus-card:hover {
+  animation: breathing-glow 1s ease-in-out;
+}
+
+/* Naruto Theme */
+.theme-naruto {
+  --primary: #E74C3C;
+  --primary-foreground: #FFFFFF;
+  --accent: #F1C40F;
+}
+
+.theme-naruto .sharingan-effect {
+  animation: sharingan-spin 4s linear infinite;
+}
+
+.theme-naruto .chakra-flow {
+  background: linear-gradient(45deg, #E74C3C, #F1C40F, #E74C3C);
+  background-size: 200% 200%;
+  animation: chakra-flow 3s ease infinite;
+}
+
+.theme-naruto .ninja-scroll {
+  animation: ninja-scroll-unfurl 0.5s ease-out;
+}
+
+/* Focus session cards with Sharingan effect */
+.theme-naruto .focus-card {
+  box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.theme-naruto .focus-card:hover {
+  animation: sharingan-spin 2s linear;
+}
+
+/* Dandadan Theme */
+.theme-dandadan {
+  --primary: #FFFFFF;
+  --primary-foreground: #000000;
+  --accent: #A8E4E3;
+  --background: rgba(0, 0, 0, 0.85);
+  --foreground: #FFFFFF;
+  --muted-foreground: #E0E0E0;
+  --card: rgba(0, 0, 0, 0.85);
+  --card-foreground: #FFFFFF;
+  --border: rgba(168, 228, 227, 0.5);
+  --input: rgba(0, 0, 0, 0.9);
+  --ring: #A8E4E3;
+  --secondary: rgba(0, 0, 0, 0.8);
+  --secondary-foreground: #FFFFFF;
+}
+
+/* Add anime theme activation for Dandadan */
+.theme-dandadan.anime-theme-active {
+  min-height: 100vh;
+}
+
+.theme-dandadan .psychic-effect {
+  animation: psychic-waves 2s ease-in-out infinite;
+}
+
+.theme-dandadan .alien-glitch {
+  animation: alien-glitch 0.1s linear infinite;
+}
+
+.theme-dandadan .supernatural-aura {
+  animation: supernatural-aura 3s ease-in-out infinite;
+}
+
+/* Focus session cards with psychic effect */
+.theme-dandadan .focus-card {
+  box-shadow: 0 0 20px rgba(168, 228, 227, 0.4);
+  border: 1px solid rgba(168, 228, 227, 0.3);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.theme-dandadan .focus-card:hover {
+  animation: psychic-waves 1s ease-in-out;
+  box-shadow: 0 0 30px rgba(168, 228, 227, 0.6);
+}
+
+/* Enhanced cards and panels for Dandadan theme */
+.theme-dandadan .card,
+.theme-dandadan [class*="card"] {
+  background: rgba(0, 0, 0, 0.85) !important;
+  border-color: rgba(168, 228, 227, 0.5) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(10px);
+}
+
+.theme-dandadan .dialog-content,
+.theme-dandadan [class*="dialog"] {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(168, 228, 227, 0.7) !important;
+  backdrop-filter: blur(15px);
+}
+
+/* Add better background contrast for main content areas */
+.theme-dandadan main,
+.theme-dandadan .main-content {
+  background: rgba(15, 23, 30, 0.85) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Better header visibility */
+.theme-dandadan header {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(168, 228, 227, 0.3) !important;
+  backdrop-filter: blur(15px);
+}
+
+/* Sidebar improvements */
+.theme-dandadan .sidebar,
+.theme-dandadan nav {
+  background: rgba(0, 0, 0, 0.9) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Text color overrides for accessibility */
+.theme-dandadan h1,
+.theme-dandadan h2,
+.theme-dandadan h3,
+.theme-dandadan h4,
+.theme-dandadan h5,
+.theme-dandadan h6 {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.theme-dandadan p,
+.theme-dandadan span,
+.theme-dandadan div {
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.theme-dandadan .text-muted-foreground,
+.theme-dandadan [class*="muted"] {
+  color: #E0E0E0 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Button styling for Dandadan theme */
+.theme-dandadan .btn-primary,
+.theme-dandadan button[class*="primary"],
+.theme-dandadan .bg-primary {
+  background: #A8E4E3 !important;
+  color: #000000 !important;
+  border-color: #A8E4E3 !important;
+  font-weight: 600;
+}
+
+.theme-dandadan .btn-primary:hover,
+.theme-dandadan button[class*="primary"]:hover {
+  background: #98FFFB !important;
+  box-shadow: 0 0 15px rgba(168, 228, 227, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Active/accent elements */
+.theme-dandadan [class*="accent"],
+.theme-dandadan .active {
+  color: #A8E4E3 !important;
+  border-color: #A8E4E3 !important;
+}
+
+/* Badge styling */
+.theme-dandadan .badge,
+.theme-dandadan [class*="badge"] {
+  background: rgba(0, 0, 0, 0.8) !important;
+  color: #A8E4E3 !important;
+  border-color: rgba(168, 228, 227, 0.5) !important;
+}
+
+/* Theme selector improvements */
+.theme-dandadan .select-trigger,
+.theme-dandadan [class*="select"] {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(168, 228, 227, 0.5) !important;
+  color: #FFFFFF !important;
+  backdrop-filter: blur(10px);
+}
+
+.theme-dandadan .select-content {
+  background: rgba(0, 0, 0, 0.95) !important;
+  border-color: rgba(168, 228, 227, 0.7) !important;
+  backdrop-filter: blur(15px);
+}
+
+/* Custom scrollbars for anime themes */
+.theme-demon-slayer::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #E67E22, #C0392B);
+}
+
+.theme-naruto::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #E74C3C, #F1C40F);
+}
+
+.theme-dandadan::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #A8E4E3, #98FFFB);
+}
+
+/* Anime theme button styles */
+.anime-theme-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.anime-theme-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.anime-theme-button:hover::before {
+  left: 100%;
+}
+
+/* Anime particles system */
+.anime-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.anime-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.theme-demon-slayer .anime-particle {
+  background: radial-gradient(circle, #E67E22, #C0392B);
+  animation: flame-particles 4s ease-out infinite;
+}
+
+.theme-naruto .anime-particle {
+  background: radial-gradient(circle, #E74C3C, #F1C40F);
+  animation: chakra-flow 3s ease infinite;
+}
+
+.theme-dandadan .anime-particle {
+  background: radial-gradient(circle, #A8E4E3, #98FFFB);
+  animation: psychic-waves 3s ease-in-out infinite;
+}
+
+/* Special effects for different elements */
+.theme-demon-slayer .timer-display {
+  text-shadow: 0 0 10px rgba(230, 126, 34, 0.5);
+}
+
+.theme-naruto .timer-display {
+  text-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+}
+
+.theme-dandadan .timer-display {
+  text-shadow: 0 0 10px rgba(168, 228, 227, 0.8);
+  color: #FFFFFF;
+}
+
+/* Theme switcher animations */
+.theme-transition {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading animations for theme switches */
+.theme-loading {
+  position: relative;
+}
+
+.theme-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .anime-theme-active::before {
+    background-attachment: scroll;
+  }
+  
+  .anime-particle {
+    display: none; /* Disable particles on mobile for performance */
+  }
+  
+  /* Ensure background is still visible on mobile */
+  .theme-dandadan.anime-theme-active::before {
+    opacity: 1;
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .theme-demon-slayer,
+  .theme-naruto,
+  .theme-dandadan {
+    --primary: #FFFFFF;
+    --accent: #A8E4E3;
+  }
+  
+  .anime-theme-active::before {
+    opacity: 0.3;
+  }
+}
+
+/* Reduced motion adjustments */
+@media (prefers-reduced-motion: reduce) {
+  .breathing-effect,
+  .sharingan-effect,
+  .psychic-effect,
+  .flame-particle,
+  .chakra-flow,
+  .supernatural-aura,
+  .alien-glitch {
+    animation: none;
+  }
+  
+  .anime-particle {
+    display: none;
+  }
+}

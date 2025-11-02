@@ -7,6 +7,7 @@ import { TeacherDashboardPage } from "./dashboard/TeacherDashboardPage";
 import { handleAuthSuccess, getUserData } from "@/utils/firebaseUserHandler";
 import { updateUserRole } from "@/config/firebase";
 import { TokenProvider } from "@/contexts/TokenContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const TimeOutApp = () => {
   const [userRole, setUserRole] = useState<"student" | "teacher" | null>(null);
@@ -106,17 +107,21 @@ export const TimeOutApp = () => {
   // Show appropriate dashboard based on role
   if (userRole === "student") {
     return (
-      <TokenProvider>
-        <StudentDashboard />
-      </TokenProvider>
+      <ThemeProvider>
+        <TokenProvider>
+          <StudentDashboard />
+        </TokenProvider>
+      </ThemeProvider>
     );
   }
 
   if (userRole === "teacher") {
     return (
-      <TokenProvider>
-        <TeacherDashboardPage />
-      </TokenProvider>
+      <ThemeProvider>
+        <TokenProvider>
+          <TeacherDashboardPage />
+        </TokenProvider>
+      </ThemeProvider>
     );
   }
 

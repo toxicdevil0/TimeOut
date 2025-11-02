@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { Sidebar } from "./Sidebar";
 import { LogoutButton } from "../auth/LogoutButton";
 import { TokenDisplay } from "../tokens/TokenDisplay";
+import { ThemeSelector } from "../theme/ThemeSelector";
 import { useTokens } from "@/contexts/TokenContext";
 
 interface MainLayoutProps {
@@ -75,6 +76,9 @@ export const MainLayout = ({ children, currentView, onViewChange }: MainLayoutPr
                 <span className="text-sm text-muted-foreground">Ready to focus</span>
               </div>
             )}
+            
+            {/* Theme Selector */}
+            <ThemeSelector />
             
             {/* Token Balance Display */}
             <div className="flex items-center space-x-4">
