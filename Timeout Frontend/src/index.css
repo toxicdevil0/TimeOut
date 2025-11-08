@@ -1,9 +1,9 @@
+/* Import anime theme styles */
+@import './styles/animeThemes.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import anime theme styles */
-@import './styles/animeThemes.css';
 
 /* TimeOut Design System - Focus & Study App */
 

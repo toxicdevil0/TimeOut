@@ -2,6 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // Firebase config - using environment variables
 const firebaseConfig = {
@@ -18,6 +19,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const functions = getFunctions(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 // Connect to emulators in development
 if (import.meta.env.DEV) {
@@ -32,7 +34,7 @@ if (import.meta.env.DEV) {
 
 
 // Export Firebase services
-export { auth };
+export { auth, db };
 
 // Callable functions (enabled)
 export const createRoom = httpsCallable(functions, 'createRoom');
